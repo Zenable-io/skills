@@ -4,5 +4,5 @@ requires-python = ">=3.13"
 
 [[package]]
 name = "skills"
-version = "2.4.3"
+version = "3.0.0"
 source = { virtual = "." }
