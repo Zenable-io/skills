@@ -71,6 +71,13 @@ Agree on depth before doing analysis:
 - **Exhaustive** — auditor-grade detail, richer evidence capture, actor/action
   matrices, trust-boundary diagrams, and the Phase 4 claim audit.
 
+Propose a depth rather than asking cold: size the repo first (files, languages,
+entry points, commit count) and weigh it against the interview — a small repo
+with a narrow concern rarely needs more than Fast, and a large repo for an
+external audience rarely gets away with less than Exhaustive. Say which you
+recommend and why, then let the user pick. Depth is a budget for the AI review
+pass below as much as for the report.
+
 Also settle the assessment's boundary, which `setup` alone won't ask about:
 
 - **Scope** — organization, department, software, platform (Kubernetes, Lambda,
@@ -82,6 +89,10 @@ Also settle the assessment's boundary, which `setup` alone won't ask about:
 - **Actors and actions** — normal and adversarial personas: external without
   access, customer user, admin, service account, malicious insider, compromised
   vendor, compromised CI.
+- **Expected load** — one person running a script, a team's internal tool, or
+  many users and processes at once. Scale findings (races, unbounded growth, a
+  query per item) are only findings relative to the load the system actually
+  sees, so record the assumption and judge against it.
 - **Success criteria** — what can go wrong, and how would we know we did well?
 
 After the structured questions, switch into looser brainstorming: invite the
@@ -239,6 +250,32 @@ unsure whether a rule is signal or noise, ask the user before suppressing.
 Now do a second pass the CLI cannot do. For each requirement, walk the relevant
 files looking for what the deterministic scanner missed: architectural concerns,
 threat-model gaps, design-level issues, anything needing judgment.
+
+**Map before you read.** Start from the README, build and deploy config,
+dependency list, entry points (main, routes, handlers, jobs, CLI commands), and
+the tests, then trace the main flows end to end: where data comes in, what is
+stored, what goes out. Read those paths fully — user input, auth, money, data
+writes, background jobs, anything shared between processes. Spend the rest of
+the depth budget from Phase 1 where a mistake costs the most, not file by file.
+On a small repo that may mean reading everything; on a large one it never does.
+Either way, keep a running list of what you did not read — it becomes the
+coverage statement in the report.
+
+Review in priority order: correct, safe, holds under the expected load, tested,
+fast, lean. A finding higher on that list outranks any number below it.
+
+**No reproduction, no finding.** Every AI-pass finding states a concrete
+scenario — this input, this actor, this sequence of calls leads to this wrong
+result — and cites the evidence that shows it: the file and lines, a command
+output, or an experiment under `experiments/`. A worry without a scenario is
+not a finding; if it is still worth recording, it goes in Appendix B as
+unconfirmed, with what evidence would confirm it.
+
+**Before you call anything unused, unreachable, or dead, grep the whole tree
+for it** — tests, fixtures, config, templates, and string or dynamic references
+included. The same check applies to "not validated", "never called", and "no
+test covers this": confirm the negative in primary evidence, not by the absence
+of a hit in the files you happened to read.
 
 Keep AI-pass findings in the same schema as the `zenable check` JSON output so
 the merge is mechanical. Write them to `evidence/findings/ai-review.json` as
@@ -462,12 +499,20 @@ and GFM pipe tables (a header row, a `|---|---|` separator, then body rows).
 
 Fill in:
 
-- `meta`, `investigator`, `scope` — from `frame.md`
+- `meta`, `investigator`, `scope` — from `frame.md`. `scope.notes` also carries
+  the coverage statement: the depth chosen, the expected load assumed, and what
+  was not read or could not be run. A report that is silent on its own limits
+  will be read as if it had none, and that is where it loses a skeptical
+  reader
 - `samm.domains[*].score` — if section 4 is in; assess each domain against what
   you've seen
 - `strengths` — what's *good* about the codebase, with the same evidence rigor as
   findings
-- `findings` — the merged set, scored against the rubric
+- `findings` — the merged set, scored against the rubric. Write each `detail`
+  in four parts, as `#### ` subheads: **What this is** (the code and what it
+  does), **Problem** (the reproduction scenario from the AI pass — input, actor,
+  sequence, wrong result), **Fix** (the smallest change that works; prefer one
+  that deletes code), **If we skip it** (the consequence in the reader's terms)
 - `cves` — only confirmed-exploitable; dependency CVEs without a usable code path
   belong in a single roll-up finding
 - `customRequirements.sections` — one per requirement, with `requirementId` set
@@ -766,6 +811,11 @@ parallel and stay out of your context.
 - Never invent findings to fill space. If a section has nothing real, it says
   nothing.
 - Be expert but understandable. Professional, approachable, practical.
+- Write the report in Simplified Technical English (ASD-STE100): short
+  sentences, one idea each, active voice, one meaning per word, no idiom. Pitch
+  the vocabulary to the audience in `frame.md` — define a term on first use
+  for an executive or auditor reader, and skip the definitions for an
+  engineering reader who already has them.
 - Keep the conversation relaxed enough that the user can brainstorm. The final
   report stays crisp and evidence-driven.
 - Be concise without being curt. Bullets when they make a comparison or choice

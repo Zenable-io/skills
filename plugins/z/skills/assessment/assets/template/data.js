@@ -150,6 +150,11 @@ window.REPORT = {
   /*   { key, title, severity, likelihoodInputs, impactInputs, detail,  */
   /*     evidence: [], relatedCveIds: [], requirementIds: [],           */
   /*     recommendationKey, source }                                    */
+  /*   detail — four `#### ` subheads, in order: What this is, Problem  */
+  /*   (the concrete reproduction: input, actor, sequence, wrong        */
+  /*   result), Fix (smallest change that works), If we skip it.        */
+  /*   evidence — at least one entry per finding; no evidence, no       */
+  /*   finding (move it to `unconfirmed` instead).                      */
   /*   source ∈ { "zenable-check" | "ai-review" | "merged" } — origin   */
   /*   of the finding for traceability.                                 */
   /* ------------------------------------------------------------------ */
