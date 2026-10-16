@@ -26,17 +26,12 @@ runs:
     - name: Setup uv
       uses: astral-sh/setup-uv@v7
       with:
-        enable-cache: true
-        cache-dependency-glob: "**/uv.lock"
+        # Off on purpose: this repo locks zero dependencies, so the entry held ~230 KB and cost
+        # ~2 s to restore. prek and the ephemeral pytest are pruned from it anyway, so a miss costs
+        # nothing a hit would have saved. Do NOT add a hand-rolled cache over ~/.cache/uv either:
+        # setup-uv points UV_CACHE_DIR at the runner temp dir, so that path is always empty.
+        enable-cache: false
         python-version: ${{ inputs.python-version }}
-
-    - name: Cache uv downloads
-      uses: actions/cache@v5
-      with:
-        path: ~/.cache/uv
-        key: uv-downloads-${{ runner.os }}-${{ hashFiles(format('{0}/uv.lock', inputs.working-directory)) }}
-        restore-keys: |
-          uv-downloads-${{ runner.os }}-
 
     - name: Install Task
       uses: go-task/setup-task@v1
