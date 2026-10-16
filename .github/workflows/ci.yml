@@ -17,6 +17,11 @@ on:
 env:
   python_version: "3.13"
 
+# Safe to cancel: these jobs are stateless lint/test. Keyed on the ref so a push to a PR cancels that PR's superseded run and nothing else.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 defaults:
   run:
     shell: 'bash --noprofile --norc -Eeuo pipefail {0}'
@@ -35,15 +40,29 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           python-version: ${{ env.python_version }}
-      # restore-keys means a hook bump reuses the previous run's environments for every unchanged hook instead of rebuilding all of them from scratch
+      # prek is installed unpinned and can invalidate saved environments without a config change, so its version is in the key; otherwise main would
+      # hit an entry it rebuilds every run and never re-saves
+      - name: Check prek version
+        id: prek
+        run: echo "version=$(prek --version | cut -d' ' -f2)" | tee -a "${GITHUB_OUTPUT}"
+      # main is the only writer. `task lint` prepares every hook before the post-step save and gcs unreferenced ones, so the entry is always complete.
+      # restore-keys means a hook bump reuses the previous entry's environments for every unchanged hook instead of rebuilding all of them from scratch.
       - name: Cache the prek hook environments
+        if: github.ref == 'refs/heads/main'
         uses: actions/cache@v5
         with:
           path: ~/.cache/prek
-          key: prek-${{ runner.os }}-${{ env.python_version }}-${{ hashFiles('.pre-commit-config.yaml') }}
-          restore-keys: |
-            prek-${{ runner.os }}-${{ env.python_version }}-
-            prek-${{ runner.os }}-
+          key: prek-${{ runner.os }}-${{ env.python_version }}-${{ steps.prek.outputs.version }}-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: prek-${{ runner.os }}-${{ env.python_version }}-
+      # Restore only: a PR-scoped copy serves that PR alone and pushes main's entries out of the repo's 10 GB cache cap. Key MUST stay identical to the
+      # step above so PRs hit main's entry; a PR that edits the hook config falls back to main's latest and installs only the hooks whose revs changed.
+      - name: Restore the prek hook environments from main
+        if: github.ref != 'refs/heads/main'
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/.cache/prek
+          key: prek-${{ runner.os }}-${{ env.python_version }}-${{ steps.prek.outputs.version }}-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: prek-${{ runner.os }}-${{ env.python_version }}-
       - name: Lint
         run: task -v lint
   test:
