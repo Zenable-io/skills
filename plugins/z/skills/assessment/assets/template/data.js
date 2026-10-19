@@ -36,8 +36,7 @@ window.REPORT = {
     title: "", // Lead reviewer title
     analysisDates: "", // e.g. "May 20 – June 29, 2026" — the period the analysis was conducted
     contributors: [], // Additional names
-    statement:
-      "All AI usage was via inference providers which do not retain or train on inputs or outputs.", // Free-form attestation / methodology statement — lead with the engagement-specific methodology, then keep this standing AI-usage attestation verbatim
+    statement: "", // Engagement-specific methodology; provider assurances require verified policies and settings.
   },
 
   /* ------------------------------------------------------------------ */
