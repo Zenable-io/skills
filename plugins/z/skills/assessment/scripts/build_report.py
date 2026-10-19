@@ -83,8 +83,13 @@ def _read_concat_string(text: str, i: int) -> str:
     return "".join(parts)
 
 
+def _property_pattern(key: str) -> str:
+    name = re.escape(key)
+    return rf"""(?<![\w$])(?:{name}|"{name}"|'{name}')\s*:\s*"""
+
+
 def _block(text: str, key: str) -> str:
-    match = re.search(r"\b" + re.escape(key) + r"\s*:\s*\{", text)
+    match = re.search(_property_pattern(key) + r"\{", text)
     if not match:
         raise KeyError(key)
     start = match.end() - 1
@@ -112,14 +117,14 @@ def _block(text: str, key: str) -> str:
 
 
 def _scalar(text: str, key: str, default: str = "") -> str:
-    match = re.search(r"\b" + re.escape(key) + r"\s*:\s*", text)
+    match = re.search(_property_pattern(key), text)
     if not match:
         return default
     return _read_concat_string(text, match.end())
 
 
 def _first_array_string(text: str, key: str) -> str:
-    match = re.search(r"\b" + re.escape(key) + r"\s*:\s*\[", text)
+    match = re.search(_property_pattern(key) + r"\[", text)
     if not match:
         return ""
     return _read_concat_string(text, match.end())
@@ -159,7 +164,9 @@ def derive_meta(data_js_text: str) -> dict[str, object]:
     except KeyError:
         risk = ""
 
-    severities = re.findall(r'\bseverity\s*:\s*"([A-Za-z]+)"', data_js_text)
+    severities = re.findall(
+        _property_pattern("severity") + r"""["']([A-Za-z]+)["']""", data_js_text
+    )
     counts = {"critical": 0, "high": 0, "medium": 0, "low": 0}
     for severity in severities:
         key = _meta_severity_key(severity)
