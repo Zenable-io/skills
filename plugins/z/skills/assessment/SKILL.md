@@ -424,9 +424,11 @@ filling it; removing one means deleting both the `data.js` field and the HTML
 - **9. Custom Requirements Review** — required; each requirement setup persisted
   gets a status here
 - **10. Recommendations** — required if there are findings
-- **11. Investigator statement** — required; must include the standing
-  attestation, near-verbatim, that "All AI usage was via inference providers
-  which do not retain or train on inputs or outputs."
+- **11. Investigator statement** — required; describe the AI assistance used.
+  Include provider retention or training assurances only when the engagement's
+  actual providers, policies and settings have been verified. Otherwise say
+  those policies were not independently verified; never infer them from the
+  model name or routing service.
 - **A. Provided artifacts** — optional; SHA-256 of the inputs, from
   `hash_artifacts.py`
 - **B. Possible (unconfirmed) findings** — optional; things worth more research
