@@ -8,8 +8,9 @@
  * Conventions:
  *   - Empty arrays / null fields are intentional placeholders — the renderer
  *     just hides the corresponding section block.
- *   - Severity, likelihood, and impact are derived from the numeric inputs
- *     on each finding (see the rubric below). Do not hand-set `severity`.
+ *   - Set each finding's `severity` explicitly: Critical, High, Medium, or Low.
+ *     Likelihood and impact scores, and their risk-matrix axis buckets, are
+ *     derived separately from the numeric inputs below.
  *   - For sections the user opted out of during the report walkthrough,
  *     leave the corresponding container empty and also remove (or hide) the
  *     section in index.html.
