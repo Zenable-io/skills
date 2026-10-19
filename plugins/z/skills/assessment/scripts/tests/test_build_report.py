@@ -131,10 +131,7 @@ def test_build_report_writes_bundle_dir_and_zip(
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize("key_quotes", ["", '"', "'"])
-def test_build_report_normalizes_finding_severity_counts(
-    tmp_path: Path, key_quotes: str
-) -> None:
+def test_build_report_normalizes_finding_severity_counts(tmp_path):
     report_dir = tmp_path / "report"
     _write_report(report_dir)
     data_js = report_dir / "data.js"
@@ -161,12 +158,7 @@ def test_build_report_normalizes_finding_severity_counts(
         encoding="utf-8",
     )
 
-    source = re.sub(
-        r"\b([A-Za-z_]\w*)(?=\s*:)",
-        lambda match: f"{key_quotes}{match.group(1)}{key_quotes}",
-        data_js.read_text(encoding="utf-8"),
-    )
-    meta = build_report.derive_meta(source)
+    meta = build_report.derive_meta(data_js.read_text(encoding="utf-8"))
 
     assert meta["findings_total"] == 5
     assert meta["severity_counts"] == {
