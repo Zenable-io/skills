@@ -52,13 +52,25 @@ def _write_report(report_dir: Path, *, extra_resource: str = "") -> None:
 
 
 @pytest.mark.unit
-def test_build_report_writes_bundle_dir_and_zip(tmp_path):
+@pytest.mark.parametrize("key_quotes", ["", '"', "'"])
+def test_build_report_writes_bundle_dir_and_zip(
+    tmp_path: Path, key_quotes: str
+) -> None:
     report_dir = tmp_path / "report"
     context_dir = tmp_path / "context"
     evidence_dir = tmp_path / "evidence"
     experiments_dir = tmp_path / "experiments"
     out_dir = tmp_path / "dist"
     _write_report(report_dir)
+    data_js = report_dir / "data.js"
+    data_js.write_text(
+        re.sub(
+            r"\b([A-Za-z_]\w*)(?=\s*:)",
+            lambda match: f"{key_quotes}{match.group(1)}{key_quotes}",
+            data_js.read_text(encoding="utf-8"),
+        ),
+        encoding="utf-8",
+    )
     context_dir.mkdir()
     (context_dir / "logan-email.md").write_text("verbatim", encoding="utf-8")
     evidence_dir.mkdir()
