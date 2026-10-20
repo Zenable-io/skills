@@ -8,6 +8,10 @@ description: Implement a new feature with research, a PRD, SOLID design, non-ove
 We are implementing a new feature. The feature to implement is whatever the user
 described when invoking this skill; if that is unclear, ask before writing code.
 
+Before the PRD, ask the user about future use cases of what we're building: is there
+the potential for this to expand or be used in different scenarios? Use the answers to
+derive an optimal software design pattern for implementation.
+
 Do research and ultrathink, write a SOLID, DRY approach. Think through this step by
 step and build a PRD and then execute on it.
 
