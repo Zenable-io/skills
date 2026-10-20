@@ -45,7 +45,7 @@ skill needs the CLI for durable Zenable requirements support.
 
 ### Sign-in and plan
 
-Paid-plan permission check: !`zenable auth can-i get_findings 2>/dev/null; echo "exit code $?"`
+Permission check: !`zenable auth can-i get_findings 2>/dev/null; echo "exit code $?"`
 
 This one call confirms the user is signed in **and** their account has an active
 trial or paid plan: `get_findings` is a paid-plan tool, so the server answers `yes`
