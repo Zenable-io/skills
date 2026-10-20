@@ -45,7 +45,7 @@ skill needs the CLI for durable Zenable requirements support.
 
 ### Sign-in and plan
 
-zenable access: !`zenable auth can-i get_findings 2>/dev/null; echo "exit code $?"`
+Permission check: !`zenable auth can-i get_findings 2>/dev/null; echo "exit code $?"`
 
 This one call confirms the user is signed in **and** their account has an active
 trial or paid plan: `get_findings` is a paid-plan tool, so the server answers `yes`
@@ -56,7 +56,7 @@ Continue only on exit code 0. For any other code, look it up in the
 [Zenable CLI reference](https://docs.zenable.io/integrations/zenable/commands), tell the
 user what it means and how to fix it, and stop until the check passes.
 
-zenable auth identity: !`zenable auth whoami 2>&1 || echo "NOT AUTHENTICATED"`
+Authenticated account: !`zenable auth whoami 2>&1 || echo "NOT AUTHENTICATED"`
 
 Use the identity above when you tell the user what you found.
 
