@@ -79,12 +79,14 @@ edit with nothing else to configure. What you get:
 
 - **Hooks** — automatic guardrail review after each file edit. Violations are
   returned to the agent to fix in place.
-- **Skills** — eleven of them, all invocable as `/z:<name>`. **`/z:review`**
+- **Skills** — twelve of them, all invocable as `/z:<name>`. **`/z:review`**
   for autonomous, requirement-aware code review; **`/z:setup`** to onboard a
   codebase by turning the standards you've already written down into scoped
   Zenable requirements; **`/z:assessment`** to run a full assessment on top of
   those requirements and produce a deliverable report; **`/z:triage`** to address
-  unresolved Zenable review comments on the current PR/MR; plus `/z:feat`,
+  unresolved Zenable review comments on the current PR/MR; **`/z:pr-metrics`**
+  to render your organization's PR delivery history before and after Zenable
+  as a local report; plus `/z:feat`,
   `/z:debug`, `/z:addtests`, `/z:doublecheck`, `/z:rebase`, `/z:prfeedback`, and
   `/z:researchbranch`.
 - **CLI** — the local engine behind the hooks and skills, running deterministic,
@@ -104,7 +106,7 @@ Deep dive: [Claude Code integration](https://www.zenable.app/docs/integrations/m
 
 The same package is also a portable
 [Agent Plugins 1.0](https://agent-plugins.org/specification) plugin, so clients
-that implement the spec load the identical eleven skills with no Zenable-specific
+that implement the spec load the identical twelve skills with no Zenable-specific
 glue. Install it through the client's own plugin flow, adding
 `Zenable-io/skills` as a marketplace and then installing `z@zenable`.
 

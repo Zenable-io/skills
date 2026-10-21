@@ -95,6 +95,7 @@ tasks:
       - task: test-plugin
       - task: test-scripts
       - task: test-assessment-scripts
+      - task: test-pr-metrics-scripts
       - task: test-report-template
       - task: test-skills-cli
 
@@ -131,6 +132,16 @@ tasks:
       # surface at zero. --exclude-newer gives a freshly published (potentially
       # compromised) release time to be caught before we pull it in.
       - uv run --with pytest --exclude-newer "7 days" --no-project pytest plugins/z/skills/assessment/scripts/tests -q
+
+  test-pr-metrics-scripts:
+    desc: Test the pr-metrics skill's fetch script against a stubbed zenable CLI
+    preconditions:
+      - which uv
+      - uv --version
+    cmds:
+      # Same ephemeral, age-gated pytest as test-assessment-scripts, in its own run
+      # because both test directories ship a conftest.py of the same module name.
+      - uv run --with pytest --exclude-newer "7 days" --no-project pytest plugins/z/skills/pr-metrics/scripts/tests -q
 
   test-report-template:
     desc: Test the assessment report template's render pipeline (app.js)

@@ -115,6 +115,11 @@ skills/
 │           │   ├── assets/       # HTML report template + workspace rules
 │           │   ├── references/   # Evidence-model tool reference
 │           │   └── scripts/      # Evidence transforms + bundle builder (+ tests)
+│           ├── pr-metrics/       # /z:pr-metrics — local PR delivery history report
+│           │   ├── SKILL.md
+│           │   ├── assets/       # Report page
+│           │   ├── references/   # Data contract
+│           │   └── scripts/      # Fetch script (+ tests)
 │           ├── review/
 │           │   └── SKILL.md      # Autonomous conformance reviewer
 │           ├── setup/            # /z:setup onboarding
