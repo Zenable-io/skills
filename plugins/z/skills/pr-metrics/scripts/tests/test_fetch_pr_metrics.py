@@ -2,7 +2,6 @@ import json
 import os
 import sys
 from datetime import date
-from pathlib import Path
 
 import pytest
 from conftest import load_script
@@ -155,10 +154,15 @@ def test_failed_write_keeps_previous_file(tmp_path, monkeypatch):
     assert [p.name for p in tmp_path.iterdir()] == ["data.json"]
 
 
-def test_start_after_end_is_rejected():
+def test_start_after_end_is_rejected(capsys):
     with pytest.raises(SystemExit):
         fetch.parse_args(["--start", "2026-05-01", "--end", "2026-04-01"], date(2026, 10, 21))
+    assert "--start 2026-05-01 is after --end 2026-04-01" in capsys.readouterr().err
 
 
-def test_template_is_shipped():
-    assert Path(fetch.REPORT_TEMPLATE).is_file()
+def test_missing_cli_fails_with_install_hint(tmp_path, monkeypatch, capsys):
+    monkeypatch.setenv("PATH", str(tmp_path))
+    out = tmp_path / "report"
+    assert fetch.main(["--out", str(out)]) == 1
+    assert "the `zenable` CLI is not on PATH" in capsys.readouterr().err
+    assert not out.exists()
