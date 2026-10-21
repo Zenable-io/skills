@@ -58,7 +58,7 @@ def call_api(path: str, params: dict[str, str] | None = None) -> Any:
         message = f"`zenable api raw GET {path}` failed (exit {completed.returncode}): {detail}"
         if "403" in detail:
             message += (
-                "\nYour account lacks report access, or your plan does not include PR history reports."
+                "\nYour account lacks findings access, or your plan does not include PR history reports."
                 f" See {DOCS_URL}"
             )
         raise FetchError(message)

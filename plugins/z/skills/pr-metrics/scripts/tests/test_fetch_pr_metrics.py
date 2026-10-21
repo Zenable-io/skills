@@ -127,7 +127,7 @@ def test_forbidden_fails_loudly_and_writes_nothing(cli, tmp_path, capsys):
     out = tmp_path / "report"
     assert fetch.main(["--out", str(out)]) == 1
     err = capsys.readouterr().err
-    assert "HTTP 403" in err and "report access" in err
+    assert "HTTP 403" in err and "findings access" in err
     assert "https://docs.zenable.io/?utm_source=skills&utm_medium=cli" in err
     assert not out.exists()
 
@@ -137,7 +137,7 @@ def test_other_cli_errors_pass_through(cli, tmp_path, capsys):
     configure(rows=5, fail={"/api/data/github/repos": [2, "Error: not signed in"]})
     assert fetch.main(["--out", str(tmp_path / "r")]) == 1
     err = capsys.readouterr().err
-    assert "Error: not signed in" in err and "report access" not in err
+    assert "Error: not signed in" in err and "findings access" not in err
 
 
 def test_failed_write_keeps_previous_file(tmp_path, monkeypatch):

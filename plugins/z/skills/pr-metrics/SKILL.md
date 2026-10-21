@@ -23,10 +23,10 @@ If the CLI is not installed, ask the user for permission before installing
 anything. If they approve, get the current install command for their operating
 system from https://cli.zenable.app and run it, then re-run `zenable version`.
 
-Report access: !`zenable auth can-i reports:read 2>/dev/null; echo "exit code $?"`
+Findings access: !`zenable auth can-i findings:read 2>/dev/null; echo "exit code $?"`
 
 Continue only on exit code 0. Exit code 1 means the account cannot read
-reports: the user's role lacks report access, or their plan does not include
+findings: the user's role lacks findings access, or their plan does not include
 it. Tell the user that and point them to the
 [Zenable docs](https://docs.zenable.io/?utm_source=skills&utm_medium=cli). For any
 other code, the user is probably not signed in: ask them to run `zenable login`.
