@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PR delivery history</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --surface: #fcfcfb; --card: #ffffff; --border: #e4e3df; --hover: #f1f0ec;
+    --text: #0b0b0b; --text-2: #52514e; --muted: #8a8984; --grid: #ecebe7;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --warn-bg: #fff4e0; --warn: #8a5a00;
+    --inc-bg: #dbeafe; --inc: #1e40af; --exc-bg: #fef3c7; --exc: #92400e; --fixed-bg: #ecebe7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --surface: #1a1a19; --card: #222220; --border: #3a3a37; --hover: #2c2c29;
+      --text: #f0efec; --text-2: #c3c2b7; --muted: #8f8e86; --grid: #2e2e2b;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --warn-bg: #3a2c10; --warn: #f0c46a;
+      --inc-bg: #172554; --inc: #bfdbfe; --exc-bg: #451a03; --exc: #fde68a; --fixed-bg: #33332f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --surface: #1a1a19; --card: #222220; --border: #3a3a37; --hover: #2c2c29;
+    --text: #f0efec; --text-2: #c3c2b7; --muted: #8f8e86; --grid: #2e2e2b;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --warn-bg: #3a2c10; --warn: #f0c46a;
+    --inc-bg: #172554; --inc: #bfdbfe; --exc-bg: #451a03; --exc: #fde68a; --fixed-bg: #33332f;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--surface); color: var(--text);
+         font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1180px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 0 0 2px; }
+  button { font: inherit; color: inherit; }
+  .sub, .note { color: var(--text-2); }
+  .note { font-size: 12.5px; margin: 4px 0 10px; }
+  .panel { margin: 16px 0; padding: 12px; border: 1px solid var(--border); border-radius: 8px;
+           background: var(--card); display: grid; gap: 10px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+  .row > .lbl { color: var(--text-2); font-size: 12.5px; min-width: 92px; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .seg button { border: 0; background: transparent; padding: 4px 12px; cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--border); }
+  .seg button[aria-pressed="true"] { background: var(--s1); color: #fff; }
+  .seg button:disabled { opacity: .4; cursor: not-allowed; }
+  .combo { position: relative; flex: 1 1 320px; max-width: 520px; }
+  .combo input { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px;
+                 background: var(--surface); color: var(--text); }
+  .menu { position: absolute; z-index: 10; top: calc(100% + 4px); left: 0; right: 0; max-height: 360px;
+          overflow-y: auto; background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+          box-shadow: 0 8px 24px rgb(0 0 0 / .18); padding: 4px 0; }
+  .menu .grp { padding: 6px 10px 2px; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .menu .opt { display: flex; justify-content: space-between; gap: 12px; padding: 5px 10px; cursor: pointer; }
+  .menu .opt[aria-selected="true"], .menu .opt:hover { background: var(--hover); }
+  .menu .opt.more { color: var(--s1); font-size: 12.5px; }
+  .menu .opt .c { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .menu .opt .tag { font-size: 11px; color: var(--s2); margin-left: 6px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; font-size: 13px;
+          background: var(--inc-bg); color: var(--inc); }
+  .chip.exclude { background: var(--exc-bg); color: var(--exc); }
+  .chip.fixed { background: var(--fixed-bg); color: var(--text-2); }
+  .chip .mode { border: 1px solid currentColor; border-radius: 4px; padding: 0 4px; font-weight: 700;
+                background: transparent; cursor: pointer; line-height: 1.3; opacity: .85; }
+  .chip .x { border: 0; background: transparent; cursor: pointer; padding: 0 2px; opacity: .7; }
+  .linkbtn { border: 0; background: transparent; color: var(--s1); cursor: pointer; padding: 0; font-size: 12.5px; }
+  .status { font-size: 12.5px; color: var(--text-2); }
+  .banner { background: var(--warn-bg); color: var(--warn); padding: 8px 12px; border-radius: 6px; margin: 8px 0; font-size: 13px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .tile { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .tile .v { font-size: 22px; font-weight: 600; }
+  .tile .k { color: var(--text-2); font-size: 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 14px; margin-top: 14px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; min-width: 0; }
+  .card.wide { grid-column: 1 / -1; }
+  .chart { position: relative; height: 260px; }
+  details { margin-top: 8px; font-size: 12.5px; }
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 4px 8px; border-bottom: 1px solid var(--grid); text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--text-2); font-weight: 600; cursor: pointer; user-select: none; }
+  td.pick { cursor: pointer; }
+  td.pick:hover { text-decoration: underline; }
+  .scroll { overflow-x: auto; }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title">PR delivery history</h1>
+  <div class="sub" id="subtitle"></div>
+  <div id="banners"></div>
+
+  <div class="panel">
+    <div class="row">
+      <span class="lbl">Period</span>
+      <div class="seg" id="period" role="group" aria-label="Period">
+        <button data-v="all">All PRs</button><button data-v="before">Before Zenable</button><button data-v="after">After Zenable</button>
+      </div>
+      <span class="lbl">Authors</span>
+      <div class="seg" id="authorType" role="group" aria-label="Author type">
+        <button data-v="all">Everyone</button><button data-v="people">People</button><button data-v="automation">Automation</button>
+      </div>
+    </div>
+    <div class="row">
+      <span class="lbl">Filters</span>
+      <div class="combo" id="filterCombo"><input type="text" placeholder="Add filter: repository, author, PR size… (Enter = contains)" aria-label="Add filter"></div>
+    </div>
+    <div class="row" id="filterChipsRow" hidden>
+      <span class="lbl">Active filters</span>
+      <div class="chips" id="filterChips"></div>
+      <button class="linkbtn" id="clearFilters">Clear all</button>
+    </div>
+    <div class="row">
+      <span class="lbl">Automation</span>
+      <div class="chips" id="autoChips"></div>
+      <div class="combo" id="autoCombo"><input type="text" placeholder="Add automation login… (Enter = contains)" aria-label="Add automation login"></div>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="tiles" id="tiles"></div>
+
+  <div class="grid">
+    <section class="card"><h2>Merged PRs per month</h2>
+      <div class="note">Throughput. The closest PR-data stand-in for deployment frequency.</div>
+      <div class="chart"><canvas id="cMerged"></canvas></div></section>
+    <section class="card"><h2>Active authors per month</h2>
+      <div class="note">Distinct authors who opened a PR that month.</div>
+      <div class="chart"><canvas id="cAuthors"></canvas></div></section>
+    <section class="card"><h2>Merged PRs per active author</h2>
+      <div class="note">Shows whether volume growth is more people or more output per person.</div>
+      <div class="chart"><canvas id="cPerAuthor"></canvas></div></section>
+
+    <section class="card wide"><h2>Lead time, open → merge</h2>
+      <div class="note">Median, P75 and P90 of merged PRs by month opened. Log scale. Hollow points: month still settling (over 5% of PRs still open), so lead times there are understated.</div>
+      <div class="chart"><canvas id="cLead"></canvas></div></section>
+
+    <section class="card"><h2>Lead time by PR size</h2>
+      <div class="note">Lines changed (additions + deletions). Whole selection. Log scale.</div>
+      <div class="chart"><canvas id="cSize"></canvas></div></section>
+    <section class="card"><h2>Abandon rate per month</h2>
+      <div class="note">Closed without merge ÷ (merged + closed). An outcome signal, not a change failure rate. Hollow points: still settling.</div>
+      <div class="chart"><canvas id="cAbandon"></canvas></div></section>
+
+    <section class="card"><h2>PRs per month: people vs automation</h2>
+      <div class="note">Ignores the Authors toggle so both groups show.</div>
+      <div class="chart"><canvas id="cBotVol"></canvas></div></section>
+    <section class="card"><h2>Median lead time: people vs automation</h2>
+      <div class="note">Automation PRs often merge in minutes and pull the overall median down.</div>
+      <div class="chart"><canvas id="cBotLead"></canvas></div></section>
+
+    <section class="card wide"><h2>Repositories</h2>
+      <div class="note">Click a header to sort, a repository to filter to it.</div>
+      <div class="scroll"><table id="repoTable"></table></div></section>
+    <section class="card wide"><h2>Authors</h2>
+      <div class="note">Click an author to filter to them. "Suggested" marks logins that look like machine users; add them under Automation if they are.</div>
+      <div class="scroll"><table id="authorTable"></table></div></section>
+  </div>
+</main>
+
+<script>
+const OPEN_SHARE_SETTLING = 0.05;
+const SIZE_BUCKETS = [["XS <10", 10], ["S 10–49", 50], ["M 50–249", 250], ["L 250–999", 1000], ["XL 1000+", Infinity]];
+const LOG_TICKS_H = [0.1, 1, 6, 24, 168, 720];
+// Hint only: drives the "suggested" tag, never classifies on its own.
+const MACHINE_HINT = /bot|worker|automation|actions|deploy|release|ci[-_]|[-_]ci\b|svc|service/i;
+let DIMS = {};
+let REPO_META = new Map();  // repo key → normalized repository row
+
+// Repository rows arrive flat or with status nested under repo_metadata; normalize both.
+function normalizeRepo(row) {
+  return {
+    key: row.repo_id ?? `github:${row.full_name}`,
+    archived: row.archived ?? row.repo_metadata?.archived,
+    removed: row.removed ?? row.repo_metadata?.removed,
+    custom_properties: row.custom_properties ?? row.repo_metadata?.custom_properties ?? {},
+    review_enabled_override: row.review_enabled_override,
+  };
+}
+
+// Every dimension yields a list so a custom property with several values matches on any of them.
+function buildDims(rawRepos, extra = []) {
+  const repos = rawRepos.map(normalizeRepo);
+  REPO_META = new Map(repos.map((r) => [r.key, r]));
+  const meta = (r) => REPO_META.get(r.repo_id);
+  const dims = {
+    repo: { label: "Repository", vals: (r) => [r.repo_id], show: (v) => v.replace(/^[a-z]+:/, "") },
+    author: { label: "Author", vals: (r) => [r.pr_author ?? ""], show: (v) => v },
+    size: { label: "PR size", vals: (r) => [sizeBucket(r)], show: (v) => v },
+    repoStatus: { label: "Repo status", vals: (r) => [repoStatus(meta(r))], show: (v) => v },
+    review: { label: "Review override", vals: (r) => [reviewOverride(meta(r))], show: (v) => v },
+  };
+  const keys = [...new Set(repos.flatMap((r) => Object.keys(r.custom_properties ?? {})))].sort();
+  for (const k of keys) dims[`prop:${k}`] = { label: `Property: ${k}`, vals: (r) => propValues(meta(r), k), show: (v) => v };
+  // config.dimensions: extra filter dimensions over any PR field, with optional display labels.
+  for (const d of extra) {
+    const labels = d.labels ?? {};
+    // Mapping the value itself (not just its display) lets several raw values share one label.
+    dims[`cfg:${d.key}`] = { label: d.label ?? d.key, vals: (r) => { const v = String(r[d.field] ?? "(not set)"); return [labels[v] ?? v]; }, show: (v) => v };
+  }
+  return dims;
+}
+// "Not connected": PRs whose repository is not in your connected GitHub installation.
+function repoStatus(m) { return !m ? "Not connected" : m.removed ? "Removed" : m.archived ? "Archived" : "Active"; }
+function reviewOverride(m) {
+  if (!m) return "Not connected";
+  return m.review_enabled_override == null ? "Inherits profile" : m.review_enabled_override ? "Forced on" : "Forced off";
+}
+function propValues(m, k) {
+  const v = m?.custom_properties?.[k];
+  return v == null || v === "" ? ["(not set)"] : (Array.isArray(v) ? v : [v]).map(String);
+}
+const charts = {};
+let DATA = null;
+let S = null;  // filter state, mirrored to location.hash
+const sortState = { repoTable: { key: "prs", dir: -1 }, authorTable: { key: "prs", dir: -1 } };
+
+const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const hours = (a, b) => (Date.parse(b) - Date.parse(a)) / 36e5;
+const month = (iso) => iso.slice(0, 7);
+const pctl = (sorted, p) => sorted.length ? sorted[Math.min(sorted.length - 1, Math.ceil(p * sorted.length) - 1)] : null;
+const median = (s) => pctl(s, 0.5);
+const fmtH = (h) => h == null ? "—" : h < 48 ? `${h.toFixed(h < 10 ? 1 : 0)}h` : `${(h / 24).toFixed(1)}d`;
+const fmtPct = (n, d) => d ? `${Math.round(100 * n / d)}%` : "—";
+const num = (n) => n.toLocaleString();
+const lc = (s) => (s ?? "").toLowerCase();
+
+function sizeBucket(r) {
+  if (r.additions == null && r.deletions == null) return "Unknown";
+  const n = (r.additions || 0) + (r.deletions || 0);
+  return SIZE_BUCKETS.find(([, max]) => n < max)[0];
+}
+
+function el(tag, attrs = {}, text) {
+  const e = document.createElement(tag);
+  Object.assign(e, attrs);
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+async function loadJson(path) {
+  const r = await fetch(path, { cache: "no-store" });
+  if (!r.ok) throw new Error(`${path}: HTTP ${r.status}`);
+  return r.json();
+}
+
+function banner(text) { document.getElementById("banners").append(el("div", { className: "banner" }, text)); }
+
+// ---- state -----------------------------------------------------------------
+// A rule is {op: "is"|"contains", value}; filters add {dim, mode: "include"|"exclude"}.
+function defaultState(config) {
+  return { period: "before", authorType: "people", filters: [],
+           automation: (config.automation_authors ?? []).map((value) => ({ op: "is", value })) };
+}
+function readHash() {
+  try { return JSON.parse(decodeURIComponent(location.hash.slice(1))); } catch { return null; }
+}
+function commit() {
+  history.replaceState(null, "", "#" + encodeURIComponent(JSON.stringify(S)));
+  render();
+}
+const ruleMatches = (rule, value) => rule.op === "is" ? value === rule.value : lc(value).includes(lc(rule.value));
+const ruleLabel = (rule, show = (v) => v) => rule.op === "is" ? show(rule.value) : `contains "${rule.value}"`;
+function isAutomation(author) {
+  return !author || /\[bot\]$/i.test(author) || S.automation.some((rule) => ruleMatches(rule, author));
+}
+
+function passesFilters(r) {
+  for (const dim of Object.keys(DIMS)) {
+    const rules = S.filters.filter((f) => f.dim === dim);
+    if (!rules.length) continue;
+    const vs = DIMS[dim].vals(r);
+    const hit = (f) => vs.some((v) => ruleMatches(f, v));
+    const inc = rules.filter((f) => f.mode === "include");
+    if (inc.length && !inc.some(hit)) return false;
+    if (rules.some((f) => f.mode === "exclude" && hit(f))) return false;
+  }
+  return true;
+}
+
+// ---- load ------------------------------------------------------------------
+async function load() {
+  if (location.protocol === "file:") {
+    banner("Browsers block data loading from file://. Serve this folder: python3 -m http.server 8765 -d <this folder>, then open http://localhost:8765");
+    return;
+  }
+  const [pages, backfill, config, githubRepos] = await Promise.all(
+    ["data/pr_metrics.json", "data/backfill_progress.json", "data/config.json", "data/github_repos.json"].map(loadJson));
+  DIMS = buildDims(githubRepos.response.repos ?? [], config.dimensions ?? []);
+  const rows = pages.flatMap((p) => p.response.pr_metrics);
+  const total = pages[0]?.response.total;
+  if (total != null && total !== rows.length) banner(`Pages hold ${rows.length} rows but the API reported ${total}. Re-run the fetch.`);
+  const all = rows.filter((r) => !r.is_zenable_authored && r.opened_at);
+  const reviewed = all.filter((r) => r.zenable_reviewed && r.zenable_first_review_at).map((r) => r.zenable_first_review_at).sort();
+  DATA = { pages, backfill, config, rows: all, zenableStart: reviewed[0] ?? null };
+  document.title = config.title || "PR delivery history";
+  S = { ...defaultState(config), ...(readHash() ?? {}) };
+  // A saved link can name a custom property this refresh no longer has.
+  S.filters = S.filters.filter((f) => DIMS[f.dim]);
+  if (!DATA.zenableStart && S.period === "after") S.period = "all";
+  wireSeg("period", "period");
+  wireSeg("authorType", "authorType");
+  document.querySelector('#period [data-v="after"]').disabled = !DATA.zenableStart;
+  combo(document.getElementById("filterCombo"), filterOptions, (pick) => {
+    S.filters.push({ ...pick, mode: "include" }); commit();
+  });
+  combo(document.getElementById("autoCombo"), automationOptions, (pick) => {
+    S.automation.push({ op: pick.op, value: pick.value }); commit();
+  });
+  document.getElementById("clearFilters").onclick = () => { S.filters = []; commit(); };
+  addEventListener("hashchange", () => { const h = readHash(); if (h) { S = { ...S, ...h }; render(); } });
+  render();
+}
+
+function wireSeg(id, key) {
+  for (const b of document.querySelectorAll(`#${id} button`)) b.onclick = () => { S[key] = b.dataset.v; commit(); };
+}
+
+// ---- combobox: categories, value matches, typed "contains" ----
+// Groups return every match; each shows `page` rows (default COMBO_PAGE) plus a
+// "Load more" row, so long lists stay reachable without flooding the menu.
+const COMBO_PAGE = 8, COMBO_MORE = 25;
+function combo(root, getGroups, onPick) {
+  const input = root.querySelector("input");
+  let menu = null, items = [], active = 0, shown = new Map();
+  const close = () => { menu?.remove(); menu = null; };
+  const open = (keep = false) => {
+    const scroll = keep ? menu?.scrollTop ?? 0 : 0;
+    if (!keep) { shown = new Map(); active = 0; }
+    close();
+    const term = input.value.trim();
+    const groups = getGroups(term);
+    items = [];
+    menu = el("div", { className: "menu", role: "listbox" });
+    for (const g of groups) {
+      if (!g.items.length) continue;
+      const limit = shown.get(g.label) ?? g.page ?? COMBO_PAGE;
+      menu.append(el("div", { className: "grp" }, `${g.label} (${num(g.items.length)})`));
+      const rest = g.items.length - limit;
+      const rows = g.items.slice(0, limit);
+      if (rest > 0) rows.push({ label: `Load ${num(Math.min(rest, COMBO_MORE))} more (${num(rest)} remaining)`, more: [g.label, limit + COMBO_MORE] });
+      for (const it of rows) {
+        const o = el("div", { className: it.more ? "opt more" : "opt", role: "option" });
+        const left = el("span", {}, it.label);
+        if (it.tag) left.append(el("span", { className: "tag" }, it.tag));
+        o.append(left, el("span", { className: "c" }, it.count != null ? num(it.count) : ""));
+        o.onmousedown = (e) => { e.preventDefault(); choose(it, items.length); };
+        items.push({ it, o }); menu.append(o);
+      }
+    }
+    if (!items.length) menu.append(el("div", { className: "grp" }, "No matches"));
+    mark();
+    root.append(menu);
+    menu.scrollTop = scroll;
+  };
+  const mark = () => items.forEach(({ o }, i) => o.setAttribute("aria-selected", i === active));
+  const choose = (it, index = active) => {
+    if (it.more) { shown.set(...it.more); active = index; open(true); return; }
+    input.value = ""; close(); onPick(it.pick);
+  };
+  input.addEventListener("focus", () => open());
+  input.addEventListener("input", () => open());
+  input.addEventListener("blur", () => setTimeout(close, 100));
+  input.addEventListener("keydown", (e) => {
+    if (!menu) return;
+    if (e.key === "ArrowDown") { active = Math.min(items.length - 1, active + 1); mark(); items[active]?.o.scrollIntoView({ block: "nearest" }); e.preventDefault(); }
+    else if (e.key === "ArrowUp") { active = Math.max(0, active - 1); mark(); items[active]?.o.scrollIntoView({ block: "nearest" }); e.preventDefault(); }
+    else if (e.key === "Enter" && items[active]) { choose(items[active].it, active); e.preventDefault(); }
+    else if (e.key === "Escape") { close(); input.blur(); }
+  });
+}
+
+function periodRows() {
+  const z = DATA.zenableStart;
+  if (!z || S.period === "all") return DATA.rows;
+  return DATA.rows.filter((r) => S.period === "before" ? r.opened_at < z : r.opened_at >= z);
+}
+
+function counts(rows, dim) {
+  const m = new Map();
+  for (const r of rows) for (const v of DIMS[dim].vals(r)) m.set(v, (m.get(v) ?? 0) + 1);
+  return [...m].sort((a, b) => b[1] - a[1]);
+}
+
+function filterOptions(term) {
+  const rows = periodRows();
+  const t = lc(term);
+  const taken = (dim, v) => S.filters.some((f) => f.dim === dim && f.op === "is" && f.value === v);
+  const groups = Object.entries(DIMS).map(([dim, d]) => ({
+    label: d.label,
+    page: t ? 8 : 5,
+    items: counts(rows, dim)
+      .filter(([v]) => !taken(dim, v) && (!t || lc(d.show(v)).includes(t)))
+      .map(([v, c]) => ({ label: d.show(v), count: c, tag: dim === "author" && isAutomation(v) ? "automation" : "",
+                          pick: { dim, op: "is", value: v } })),
+  }));
+  if (t) groups.unshift({ label: "Contains", items: ["repo", "author"].map((dim) => ({
+    label: `${DIMS[dim].label} contains "${term}"`, pick: { dim, op: "contains", value: term } })) });
+  return groups;
+}
+
+function automationOptions(term) {
+  const t = lc(term);
+  const authors = counts(periodRows(), "author").filter(([a]) => a && !isAutomation(a) && (!t || lc(a).includes(t)));
+  const suggested = authors.filter(([a]) => MACHINE_HINT.test(a));
+  const groups = [];
+  if (t) groups.push({ label: "Pattern", items: [{ label: `Login contains "${term}"`, pick: { op: "contains", value: term } }] });
+  groups.push({ label: "Suggested (looks like a machine user)", items: suggested.map(([a, c]) => ({ label: a, count: c, pick: { op: "is", value: a } })) });
+  groups.push({ label: "All authors", items: authors.filter(([a]) => !MACHINE_HINT.test(a)).map(([a, c]) => ({ label: a, count: c, pick: { op: "is", value: a } })) });
+  return groups;
+}
+
+// ---- chips -----------------------------------------------------------------
+function chip({ text, mode, onMode, onRemove, fixed, title }) {
+  const c = el("span", { className: `chip${mode === "exclude" ? " exclude" : ""}${fixed ? " fixed" : ""}`, title: title ?? "" });
+  const parts = text.split("\u0000");
+  c.append(el("span", {}, parts[0]));
+  if (onMode) {
+    const b = el("button", { className: "mode", title: mode === "exclude" ? "is not (excluded) — click to include" : "is (included) — click to exclude" }, mode === "exclude" ? "≠" : "=");
+    b.onclick = onMode; c.append(b);
+  }
+  if (parts[1] != null) c.append(el("span", {}, parts[1]));
+  if (onRemove) { const x = el("button", { className: "x", title: "Remove", ariaLabel: "Remove" }, "×"); x.onclick = onRemove; c.append(x); }
+  return c;
+}
+
+function renderChips() {
+  const fc = document.getElementById("filterChips"); fc.replaceChildren();
+  S.filters.forEach((f, i) => fc.append(chip({
+    text: `${DIMS[f.dim].label}\u0000${ruleLabel(f, DIMS[f.dim].show)}`, mode: f.mode,
+    onMode: () => { f.mode = f.mode === "exclude" ? "include" : "exclude"; commit(); },
+    onRemove: () => { S.filters.splice(i, 1); commit(); },
+  })));
+  document.getElementById("filterChipsRow").hidden = !S.filters.length;
+
+  const ac = document.getElementById("autoChips"); ac.replaceChildren();
+  ac.append(chip({ text: "ends with [bot]", fixed: true, title: "GitHub app accounts. Always automation." }));
+  S.automation.forEach((rule, i) => ac.append(chip({ text: ruleLabel(rule), onRemove: () => { S.automation.splice(i, 1); commit(); } })));
+  for (const b of document.querySelectorAll("#period button")) b.setAttribute("aria-pressed", b.dataset.v === S.period);
+  for (const b of document.querySelectorAll("#authorType button")) b.setAttribute("aria-pressed", b.dataset.v === S.authorType);
+}
+
+// ---- aggregation -----------------------------------------------------------
+function bucket() { return { prs: 0, merged: 0, abandoned: 0, open: 0, leads: [], authors: new Set() }; }
+function add(b, r) {
+  b.prs++; b.authors.add(r.pr_author);
+  if (r.merge_result === "merged") {
+    b.merged++;
+    if (r.merged_at) { const h = hours(r.opened_at, r.merged_at); if (h >= 0) b.leads.push(h); }
+  } else if (r.merge_result === "closed_unmerged") b.abandoned++;
+  else b.open++;
+}
+function finish(b) { b.leads.sort((x, y) => x - y); return b; }
+function groupBy(rows, keyFn) {
+  const m = new Map();
+  for (const r of rows) { const k = keyFn(r); if (!m.has(k)) m.set(k, bucket()); add(m.get(k), r); }
+  for (const b of m.values()) finish(b);
+  return m;
+}
+const settling = (b) => b.prs && b.open / b.prs > OPEN_SHARE_SETTLING;
+
+// ---- render ----------------------------------------------------------------
+function render() {
+  renderChips();
+  const { backfill, config } = DATA;
+  const z = DATA.zenableStart;
+  const filtered = periodRows().filter(passesFilters);  // before the author-type split
+  const rows = S.authorType === "all" ? filtered
+    : filtered.filter((r) => isAutomation(r.pr_author) === (S.authorType === "automation"));
+
+  const progress = backfill.response.progress ?? [];
+  const firstCovered = progress.map((p) => p.backfill_start_date).filter(Boolean).sort()[0];
+  const months = [...new Set(filtered.map((r) => month(r.opened_at)))].sort();
+  const partial = new Set(months.length ? [months[months.length - 1]] : []);
+  if (firstCovered && firstCovered.slice(8, 10) !== "01") partial.add(month(firstCovered));
+  if (z && S.period === "after") partial.add(month(z));
+  const labels = months.map((m) => partial.has(m) ? `${m}*` : m);
+
+  const periodName = { all: "all PRs", before: "before Zenable", after: "since Zenable" }[S.period];
+  document.getElementById("title").textContent = `${config.title || "PR delivery history"}: ${periodName}`;
+  document.getElementById("subtitle").textContent =
+    (months.length ? `PRs opened ${months[0]} to ${months[months.length - 1]}` : "No PRs match") +
+    (z ? ` · Zenable's first review: ${z.slice(0, 10)}` : " · Zenable has not reviewed a PR yet") + " · * partial month";
+
+  const complete = progress.filter((p) => p.status === "completed").length;
+  const failed = progress.reduce((n, p) => n + (p.failed_pr_count || 0), 0);
+  document.getElementById("status").textContent =
+    `Fetched ${backfill.fetched_at.slice(0, 16).replace("T", " ")} UTC · ${num(DATA.rows.length)} PRs total, ${num(rows.length)} shown · ` +
+    `history import ${complete}/${progress.length} repos complete · ${num(failed)} PRs failed to process`;
+
+  const tot = finish(rows.reduce((b, r) => (add(b, r), b), bucket()));
+  const tiles = [
+    [num(tot.prs), "PRs opened"], [num(tot.merged), "merged"],
+    [fmtH(median(tot.leads)), "median lead time"], [fmtH(pctl(tot.leads, 0.9)), "P90 lead time"],
+    [fmtPct(tot.abandoned, tot.merged + tot.abandoned), "abandon rate"],
+    [num(tot.authors.size), "authors"], [num(new Set(rows.map((r) => r.repo_id)).size), "active repos"],
+  ];
+  const tilesEl = document.getElementById("tiles"); tilesEl.replaceChildren();
+  for (const [v, k] of tiles) { const t = el("div", { className: "tile" }); t.append(el("div", { className: "v" }, v), el("div", { className: "k" }, k)); tilesEl.append(t); }
+
+  const byMonth = groupBy(rows, (r) => month(r.opened_at));
+  const mb = months.map((m) => byMonth.get(m) ?? finish(bucket()));
+  const s1 = css("--s1"), s2 = css("--s2"), s3 = css("--s3");
+  const hollow = (color) => mb.map((b) => settling(b) ? css("--card") : color);
+
+  bar("cMerged", labels, [{ label: "Merged PRs", data: mb.map((b) => b.merged), backgroundColor: s1 }]);
+  bar("cAuthors", labels, [{ label: "Active authors", data: mb.map((b) => b.authors.size), backgroundColor: s1 }]);
+  line("cPerAuthor", labels, [{ label: "Merged per author", data: mb.map((b) => b.authors.size ? +(b.merged / b.authors.size).toFixed(1) : null), borderColor: s1, backgroundColor: s1 }]);
+
+  line("cLead", labels, [["Median", 0.5, s1], ["P75", 0.75, s3], ["P90", 0.9, s2]].map(([name, p, c]) => (
+    { label: name, data: mb.map((b) => pctl(b.leads, p)), borderColor: c, backgroundColor: c, pointBackgroundColor: hollow(c) })),
+  { log: true, fmt: fmtH, extra: (i) => `${num(mb[i].merged)} merged, ${num(mb[i].open)} still open` });
+
+  const bySize = groupBy(rows, sizeBucket);
+  const sb = SIZE_BUCKETS.map(([n]) => bySize.get(n) ?? finish(bucket()));
+  bar("cSize", SIZE_BUCKETS.map(([n]) => n), [
+    { label: "Median", data: sb.map((b) => median(b.leads)), backgroundColor: s1 },
+    { label: "P90", data: sb.map((b) => pctl(b.leads, 0.9)), backgroundColor: s2 },
+  ], { log: true, fmt: fmtH, extra: (i) => `${num(sb[i].merged)} merged PRs` });
+
+  line("cAbandon", labels, [{ label: "Abandon rate", data: mb.map((b) => b.merged + b.abandoned ? +(100 * b.abandoned / (b.merged + b.abandoned)).toFixed(1) : null), borderColor: s2, backgroundColor: s2, pointBackgroundColor: hollow(s2) }],
+    { fmt: (v) => `${v}%`, extra: (i) => `${num(mb[i].abandoned)} abandoned of ${num(mb[i].merged + mb[i].abandoned)} closed` });
+
+  const people = groupBy(filtered.filter((r) => !isAutomation(r.pr_author)), (r) => month(r.opened_at));
+  const auto = groupBy(filtered.filter((r) => isAutomation(r.pr_author)), (r) => month(r.opened_at));
+  const pick = (m, k) => m.get(k) ?? finish(bucket());
+  bar("cBotVol", labels, [
+    { label: "People", data: months.map((m) => pick(people, m).prs), backgroundColor: s1 },
+    { label: "Automation", data: months.map((m) => pick(auto, m).prs), backgroundColor: s2 },
+  ], { stacked: true });
+  line("cBotLead", labels, [
+    { label: "People", data: months.map((m) => median(pick(people, m).leads)), borderColor: s1, backgroundColor: s1 },
+    { label: "Automation", data: months.map((m) => median(pick(auto, m).leads)), borderColor: s2, backgroundColor: s2 },
+  ], { log: true, fmt: fmtH });
+
+  breakdownTable("repoTable", groupBy(rows, (r) => r.repo_id), "repo", "Repository");
+  breakdownTable("authorTable", groupBy(rows, (r) => r.pr_author ?? ""), "author", "Author");
+}
+
+function axisColors() { return { ticks: { color: css("--text-2") }, grid: { color: css("--grid") }, border: { color: css("--border") } }; }
+
+function baseOptions(o = {}) {
+  const y = { ...axisColors(), beginAtZero: !o.log, stacked: !!o.stacked };
+  if (o.log) Object.assign(y, { type: "logarithmic", ticks: { color: css("--text-2"), callback: fmtH },
+    afterBuildTicks: (ax) => { ax.ticks = LOG_TICKS_H.filter((v) => v >= ax.min && v <= ax.max).map((value) => ({ value })); } });
+  if (o.fmt && !o.log) y.ticks = { color: css("--text-2"), callback: o.fmt };
+  return {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: {
+      legend: { labels: { color: css("--text"), boxWidth: 12 } },
+      tooltip: { callbacks: {
+        label: (c) => `${c.dataset.label}: ${c.raw == null ? "—" : o.fmt ? o.fmt(c.raw) : num(c.raw)}`,
+        footer: o.extra ? (items) => o.extra(items[0].dataIndex) : undefined,
+      } },
+    },
+    scales: { x: { ...axisColors(), stacked: !!o.stacked, grid: { display: false } }, y },
+  };
+}
+
+function draw(id, type, labels, datasets, o) {
+  charts[id]?.destroy();
+  const opts = baseOptions(o);
+  if (datasets.length === 1) opts.plugins.legend.display = false;
+  charts[id] = new Chart(document.getElementById(id), { type, data: { labels, datasets }, options: opts });
+  tableFor(id, labels, datasets, o?.fmt);
+}
+function bar(id, labels, datasets, o = {}) {
+  draw(id, "bar", labels, datasets.map((d) => ({ borderRadius: 4, borderSkipped: "start", maxBarThickness: 28, ...d })), o);
+}
+function line(id, labels, datasets, o = {}) {
+  draw(id, "line", labels, datasets.map((d) => ({ borderWidth: 2, pointRadius: 4, pointHoverRadius: 6, spanGaps: true, ...d })), o);
+}
+
+function tableFor(id, labels, datasets, fmt) {
+  const card = document.getElementById(id).closest(".card");
+  const wasOpen = card.querySelector("details")?.open;
+  card.querySelector("details")?.remove();
+  const d = el("details", { open: !!wasOpen }); d.append(el("summary", {}, "Data table"));
+  const t = el("table"); const h = t.insertRow();
+  for (const c of ["", ...datasets.map((x) => x.label)]) h.append(el("th", {}, c));
+  labels.forEach((l, i) => { const r = t.insertRow(); r.insertCell().textContent = l;
+    for (const ds of datasets) { const v = ds.data[i]; r.insertCell().textContent = v == null ? "—" : fmt ? fmt(v) : num(v); } });
+  const s = el("div", { className: "scroll" }); s.append(t); d.append(s); card.append(d);
+}
+
+function breakdownTable(tableId, groups, dim, name) {
+  const cols = [
+    ["key", name, DIMS[dim].show],
+    ...(dim === "repo" ? [["status", "Status", (v) => v]] : []),
+    ["prs", "PRs"], ["merged", "Merged"], ["abandoned", "Abandoned"], ["abandonRate", "Abandon %", (v) => v == null ? "—" : `${v}%`],
+    ["median", "Median lead", fmtH], ["p90", "P90 lead", fmtH], ["open", "Still open"],
+  ];
+  const data = [...groups].map(([key, b]) => ({ key, status: dim === "repo" ? repoStatus(REPO_META.get(key)) : null, prs: b.prs, merged: b.merged, abandoned: b.abandoned, open: b.open,
+    abandonRate: b.merged + b.abandoned ? Math.round(100 * b.abandoned / (b.merged + b.abandoned)) : null,
+    median: median(b.leads), p90: pctl(b.leads, 0.9) }));
+  const { key, dir } = sortState[tableId];
+  const v = (x) => x[key] ?? -Infinity;
+  data.sort((a, b) => (v(a) > v(b) ? 1 : v(a) < v(b) ? -1 : 0) * dir);
+  const t = document.getElementById(tableId); t.replaceChildren();
+  const h = t.insertRow();
+  for (const [k, label] of cols) {
+    const th = el("th", {}, label + (k === key ? (dir < 0 ? " ▾" : " ▴") : ""));
+    th.onclick = () => { sortState[tableId] = { key: k, dir: k === key ? -dir : -1 }; breakdownTable(tableId, groups, dim, name); };
+    h.append(th);
+  }
+  for (const row of data) {
+    const r = t.insertRow();
+    for (const [k, , f] of cols) {
+      const c = r.insertCell(); c.textContent = f ? f(row[k]) : num(row[k]);
+      if (k === "key") {
+        c.className = "pick"; c.title = `Filter to this ${name.toLowerCase()}`;
+        c.onclick = () => { S.filters.push({ dim, op: "is", value: row.key, mode: "include" }); commit(); };
+        if (dim === "author") {
+          if (isAutomation(row.key)) c.append(el("span", { className: "tag", style: "color:var(--s2);margin-left:6px;font-size:11px" }, "automation"));
+          else if (MACHINE_HINT.test(row.key)) c.append(el("span", { className: "tag", style: "color:var(--muted);margin-left:6px;font-size:11px" }, "suggested"));
+        }
+      }
+    }
+  }
+}
+
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => DATA && render());
+load().catch((e) => banner(`Could not load data: ${e.message}. Re-run fetch_pr_metrics.py to (re)fetch.`));
+</script>
+</body>
+</html>
