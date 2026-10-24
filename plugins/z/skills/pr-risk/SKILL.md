@@ -1,15 +1,14 @@
 ---
 name: pr-risk
-description: Dispute a Zenable pull request (GitHub PR) or merge request (GitLab MR) risk assessment — read the recorded grading behind its risk level and the profile's PR risk eval suite, replay what-if scenarios (rubric weights, disabled dimensions, risk floors, a fresh re-grade) to find the smallest risk-configuration change that would have produced the level you expected, and record the dispute as an eval case so Zenable scores it and proposes a setting change for approval. Use this skill whenever the user disagrees with a PR or MR risk level, says something like "this merged as low, it should have been high", asks why a PR got its risk level, which risk setting would have changed it, or wants to give feedback on or dispute a risk assessment, or invokes `/z:pr-risk`.
+description: Dispute a Zenable pull request (GitHub PR) or merge request (GitLab MR) risk assessment — read the recorded grading behind its risk level and the profile's PR risk eval suite, explain which risk setting (rubric weights, disabled dimensions, risk floors) drove the level, and record the dispute as an eval case so Zenable scores it and proposes a setting change for approval. Use this skill whenever the user disagrees with a PR or MR risk level, says something like "this merged as low, it should have been high", asks why a PR got its risk level, which risk setting would have changed it, or wants to give feedback on or dispute a risk assessment, or invokes `/z:pr-risk`.
 allowed-tools: Bash(which zenable:*), Bash(zenable version:*), Bash(zenable auth can-i:*), Bash(zenable auth whoami:*), Bash(zenable api pr-risk:*), Bash(gh pr view:*), Bash(glab mr view:*), Bash(echo:*)
 ---
 
-# PR risk what-if
+# PR risk dispute
 
-Help the user test a risk assessment they disagree with. Read what Zenable
-recorded when it graded the PR/MR, replay scenarios against that record, find
-the smallest configuration change that reaches the level the user expected,
-and record their dispute.
+Help the user dispute a risk assessment they disagree with. Read what Zenable
+recorded when it graded the PR/MR, explain what drove the level, and record
+their dispute so Zenable searches for the configuration change.
 
 The loop after a dispute runs in Zenable, not in this skill:
 
@@ -93,8 +92,8 @@ For each run, read the level, `risk_detail` (dimension scores, composite,
 existing disputes.
 
 Then call `get_pr_risk_eval_suite` with `repository_url`, `change_ref`,
-optionally `coverage_run_id` (default: the newest run), and **no scenarios**.
-It costs 10 credits. This is the baseline:
+and optionally `coverage_run_id` (default: the newest run). It costs 10
+credits. It returns:
 
 - `recorded_grading`: grader path and model, rubric with weights, PR facts,
   per-file scores, `floor_metric_values`.
@@ -103,94 +102,26 @@ It costs 10 credits. This is the baseline:
   regressed, unchanged), and any pending proposal with its status.
 
 If the bundle already holds a dispute on this run, or a pending proposal
-fixes it, tell the user and skip to step 4.
+fixes it, tell the user and skip to step 3.
 
 Tell the user plainly which run the merge gate trusted (`merged_by_gate`) and
 what level it recorded.
 
-## 3. What-if
+## 3. Explain
 
-`get_pr_risk_eval_suite` also takes an optional `scenarios` list. Each call
-costs 10 credits and takes up to 25 scenarios (at most 5 re-grades), so batch
-them into one call. Scenario shape:
+From `recorded_grading`, show the user which file was worst, which dimensions
+scored highest in it, and which weights and floors set the level. Level
+thresholds are fixed; only weights, enabled dimensions and floors can move a
+level. Do not try to apply a change. Recording the dispute (step 4) lets
+Zenable score weight, enabled-dimension and floor changes against every case
+on the profile and propose one in **Settings > Configuration** when it breaks
+nothing; the user accepts it there, or makes the change by hand.
 
-```json
-{
-  "name": "string, at most 80 characters",
-  "rubric_overrides": [
-    {"name": "...", "description": "...", "weight": 2.0, "enabled": true}
-  ],
-  "floors": [
-    {"expression": {...}, "minimum_level": "low|medium|high|critical"}
-  ],
-  "regrade": false
-}
-```
-
-`rubric_overrides` and `floors` may be `null` to keep the recorded value.
-
-How the tool treats a scenario:
-
-- Changing only weights, `enabled` flags, or floors replays
-  **deterministically** from the recorded grades.
-- Changing a dimension's wording, adding a dimension, or `regrade: true`
-  re-grades the recorded state with Zenable's judgment model. The result is
-  marked `deterministic: false`.
-- Level thresholds are fixed. Scenarios cannot change them.
-
-A floor expression uses the same shape as a risk floor in Settings:
-
-```json
-{"type": "rule", "rule": {"condition": {
-  "metric": "total_loc_changed",
-  "category": null,
-  "operator": "greater_than",
-  "threshold": 400
-}}}
-```
-
-- `metric`: `total_loc_changed`, `total_loc_added`, `total_loc_removed`,
-  `finding_count`, or `requirements_with_findings_count`.
-- `category`: `null`, or a finding category (only for the two finding metrics).
-- `operator`: `greater_than`, `at_least`, `less_than`, or `at_most`.
-- `threshold`: an integer.
-
-To combine rules, use
-`{"type": "operation", "operator": "and|or|not", "operands": [...]}`. If the
-tool rejects that shape, use single-rule floors.
-
-A good first batch:
-
-1. **Weight sweeps**: ×2 and ×3 on the dimensions that scored highest in the
-   worst file.
-2. **Disable** the dimension that pulls the composite down.
-3. **Floor candidates** from `floor_metric_values`, for example
-   `total_loc_changed greater_than <recorded value − 1>` or
-   `finding_count at_least <recorded value>`, each with the expected level as
-   `minimum_level`.
-4. **One re-grade**: the recorded rubric with `regrade: true`, to see today's
-   judgment.
-5. **One reworded rubric**, only if the user argues a dimension's wording misses
-   the point.
-
-For each result, read `level`, `changed`, `deterministic`, `floor_level`,
-`worst_file`, and `files[]`.
-
-## 4. Recommend
-
-The smallest **deterministic** scenario that reaches the expected level is the
-suggested change. Show it as the exact rubric weights or floor entry. Do not
-try to apply it. Recording the dispute (step 5) lets Zenable score that kind of
-change against every case on the profile and propose it in **Settings >
-Configuration** when it breaks nothing; the user accepts it there, or makes the
-change by hand.
-
-If no configuration reaches the expected level, say the grader disagreed, and
-show the re-grade result. A floor is then the honest lever: it sets a minimum
-level from facts about the change rather than overriding the grader's
+A floor is often the honest lever: it sets a minimum level from facts about
+the change (`floor_metric_values`) rather than overriding the grader's
 judgment.
 
-## 5. Record the dispute
+## 4. Record the dispute
 
 Ask the user for consent, then call `add_pr_risk_eval_case` with:
 
@@ -199,7 +130,7 @@ Ask the user for consent, then call `add_pr_risk_eval_case` with:
 - `expected_level`: must differ from the recorded level; the tool refuses a
   dispute that agrees with it
 - `rationale`: at most 1024 characters; the user's one-sentence reason, plus
-  the scenario that worked
+  the setting they think should change
 
 Disputing is free. Each person has one dispute per run; disputing again
 updates it. The result says a scoring run was queued: quote that to the user,
@@ -216,7 +147,6 @@ If the MCP server is unavailable, use the CLI instead. Find the command with
 Say these plainly when they apply:
 
 - Only runs graded since Zenable started recording grading inputs can be
-  replayed. Older runs return a capture error.
-- Re-grades are judgments and can differ from run to run.
-- A floor-only scenario evaluates against the metric values recorded at review
-  time, not the PR/MR as it is now.
+  read. Older runs return a capture error.
+- Floors evaluate against the metric values recorded at review time, not the
+  PR/MR as it is now.
