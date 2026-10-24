@@ -79,14 +79,16 @@ edit with nothing else to configure. What you get:
 
 - **Hooks** — automatic guardrail review after each file edit. Violations are
   returned to the agent to fix in place.
-- **Skills** — twelve of them, all invocable as `/z:<name>`. **`/z:review`**
+- **Skills** — thirteen of them, all invocable as `/z:<name>`. **`/z:review`**
   for autonomous, requirement-aware code review; **`/z:setup`** to onboard a
   codebase by turning the standards you've already written down into scoped
   Zenable requirements; **`/z:assessment`** to run a full assessment on top of
   those requirements and produce a deliverable report; **`/z:triage`** to address
   unresolved Zenable review comments on the current PR/MR; **`/z:pr-metrics`**
   to render your organization's PR delivery history before and after Zenable
-  as a local report; plus `/z:feat`,
+  as a local report; **`/z:pr-risk`** to test a PR/MR risk level you
+  disagree with against what-if risk settings and record your verdict; plus
+  `/z:feat`,
   `/z:debug`, `/z:addtests`, `/z:doublecheck`, `/z:rebase`, `/z:prfeedback`, and
   `/z:researchbranch`.
 - **CLI** — the local engine behind the hooks and skills, running deterministic,
