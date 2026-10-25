@@ -86,8 +86,9 @@ edit with nothing else to configure. What you get:
   those requirements and produce a deliverable report; **`/z:triage`** to address
   unresolved Zenable review comments on the current PR/MR; **`/z:pr-metrics`**
   to render your organization's PR delivery history before and after Zenable
-  as a local report; **`/z:pr-risk`** to test a PR/MR risk level you
-  disagree with against what-if risk settings and record your verdict; plus
+  as a local report; **`/z:pr-risk`** to dispute a PR/MR risk level you
+  disagree with, which Zenable scores against your risk settings and turns into
+  a setting proposal; plus
   `/z:feat`,
   `/z:debug`, `/z:addtests`, `/z:doublecheck`, `/z:rebase`, `/z:prfeedback`, and
   `/z:researchbranch`.
