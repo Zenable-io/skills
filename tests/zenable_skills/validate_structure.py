@@ -329,6 +329,16 @@ def check_referenced_scripts(skill: str, body: str) -> None:
             f"`directory containing this SKILL.md`"
         )
 
+    # A skill served over MCP arrives as `skill://` resources with no directory on
+    # disk, so one that runs or copies its own files must say how to materialize them.
+    if re.search(r"(?:<skill-path>|\$\{SCRIPTS\}|this skill's directory)", body) and not (
+        re.search(r"loaded\s+from\s+an\s+MCP\s+server", body)
+    ):
+        fail(
+            f"skills/{skill}: runs files bundled with the skill without telling clients "
+            f"that were `loaded from an MCP server` how to write them to a local directory"
+        )
+
 
 def check_inline_commands(skill: str, body: str, allowed_tools: str | None) -> None:
     """Every `!`-command a skill runs at load time must be covered by its `allowed-tools`.
