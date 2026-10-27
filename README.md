@@ -23,7 +23,7 @@ Your requirements travel with you across all of them.
 ## How it works
 
 You describe a standard once in plain English; Zenable turns it into automated
-guardrails — a mix of deterministic static analysis and AI review — that enforce
+verifier rules — a mix of deterministic static analysis and AI review — that enforce
 it everywhere your code moves: in the editor as your agent writes, and again in
 pre-commit and CI. The payoff:
 
@@ -38,11 +38,11 @@ pre-commit and CI. The payoff:
 
 Over time Zenable learns from the signals your team already produces — fixes, PR
 activity, agent and human feedback, false positives — and proposes improvements
-to the requirements and guardrails themselves. Those proposals are governed by
+to the requirements and verifier rules themselves. Those proposals are governed by
 policies you set, with a human kept in the loop wherever you require one.
 
 Deep dive: [How Zenable works](https://www.zenable.app/docs/how-it-works) ·
-[Requirements & guardrails](https://www.zenable.app/docs/requirements-and-guardrails)
+[Requirements & verifier rules](https://www.zenable.app/docs/requirements-and-verifier-rules)
 
 ## Integrations
 
@@ -74,10 +74,10 @@ Install the plugin from this repo's marketplace:
 ```
 
 On first session the plugin sets itself up — it installs the `zenable` CLI and
-wires the post-edit hooks for you, so guardrail review starts running on every
+wires the post-edit hooks for you, so verifier rule review starts running on every
 edit with nothing else to configure. What you get:
 
-- **Hooks** — automatic guardrail review after each file edit. Violations are
+- **Hooks** — automatic verifier rule review after each file edit. Violations are
   returned to the agent to fix in place.
 - **Skills** — twelve of them, all invocable as `/z:<name>`. **`/z:review`**
   for autonomous, requirement-aware code review; **`/z:setup`** to onboard a
@@ -90,9 +90,9 @@ edit with nothing else to configure. What you get:
   `/z:debug`, `/z:addtests`, `/z:doublecheck`, `/z:rebase`, `/z:prfeedback`, and
   `/z:researchbranch`.
 - **CLI** — the local engine behind the hooks and skills, running deterministic,
-  token-free guardrail checks.
-- **MCP** — full platform access for your agent: your requirements, guardrails,
-  and findings, agent observability, how your requirements and guardrails
+  token-free verifier rule checks.
+- **MCP** — full platform access for your agent: your requirements, verifier rules,
+  and findings, agent observability, how your requirements and verifier rules
   improve over time, and configuring the platform itself. Connect it with one
   command:
 
@@ -174,7 +174,7 @@ Everything below redirects to [docs.zenable.io](https://docs.zenable.io):
 
 - [Zenable docs home](https://www.zenable.app/docs)
 - [How it works](https://www.zenable.app/docs/how-it-works)
-- [Requirements & guardrails](https://www.zenable.app/docs/requirements-and-guardrails)
+- [Requirements & verifier rules](https://www.zenable.app/docs/requirements-and-verifier-rules)
 - [MCP getting started](https://www.zenable.app/docs/integrations/mcp/getting-started)
 - [Claude Code integration](https://www.zenable.app/docs/integrations/mcp/ide/claude-code)
 - [Pre-commit setup](https://www.zenable.app/docs/integrations/pre-commit/getting-started)
