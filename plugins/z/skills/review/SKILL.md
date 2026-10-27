@@ -1,6 +1,6 @@
 ---
 name: review
-description: Reviews code changes against your Zenable requirements using hybrid LLM-as-judge analysis and Zenable's deterministic guardrails. Automatically invoked when making code changes or at development milestones. Use for security compliance, quality checks, and policy enforcement, or when the user invokes `/z:review`.
+description: Reviews code changes against your Zenable requirements using hybrid LLM-as-judge analysis and Zenable's deterministic verifier rules. Automatically invoked when making code changes or at development milestones. Use for security compliance, quality checks, and policy enforcement, or when the user invokes `/z:review`.
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob
 ---
 
@@ -44,7 +44,7 @@ user what it means and how to fix it, and stop until the check passes.
 
 This provides a hybrid review process combining:
 - **LLM-as-a-Judge**: Intelligent analysis of code changes against your organization's standards
-- **Deterministic + AI guardrails**: Zenable's guardrail review, run via the `zenable` CLI, which applies your tenant's policy-as-code rules (Semgrep/OpenGrep) plus server-side AI review and returns findings
+- **Deterministic + AI verifier rules**: Zenable's verifier rule review, run via the `zenable` CLI, which applies your tenant's policy-as-code rules (Semgrep/OpenGrep) plus server-side AI review and returns findings
 
 Designed to:
 - Review code changes continuously during development
@@ -70,7 +70,7 @@ This capability activates in these scenarios:
 
 **For specific scenarios**:
 - When implementing features that touch regulated areas
-- After receiving guardrail findings that need remediation
+- After receiving verifier rule findings that need remediation
 - When working on security-sensitive code
 - When modifying authentication, authorization, or data handling logic
 
@@ -78,8 +78,8 @@ This capability activates in these scenarios:
 
 Has access to:
 - All standard Claude Code tools (Read, Edit, Write, Bash, Grep, Glob)
-- The **`zenable` CLI** — `zenable check` runs Zenable's mix of AI and deterministic guardrail reviews over files and reports findings
-- The **Zenable MCP server** (when connected) — full access to the Zenable platform: your requirements, guardrails, and findings, agent observability, requirement and guardrail improvements over time, and configuring the platform itself. Use `get_requirements`, `get_guardrails`, and `get_findings` to ground the review in your active policies
+- The **`zenable` CLI** — `zenable check` runs Zenable's mix of AI and deterministic verifier rule reviews over files and reports findings
+- The **Zenable MCP server** (when connected) — full access to the Zenable platform: your requirements, verifier rules, and findings, agent observability, requirement and verifier rule improvements over time, and configuring the platform itself. Use `get_requirements`, `get_verifier_rules`, and `get_findings` to ground the review in your active policies
 
 > **If you don't have the `mcp__zenable__*` tools, run `zenable install mcp
 > claude-code` to set up the Zenable MCP server, then use them.**
@@ -89,7 +89,7 @@ Has access to:
 When activated, follow this process:
 
 1. **Analyze changes holistically**: Review not just syntax but architectural and policy implications
-2. **Run the guardrail review**: Use `zenable check` — Zenable's mix of AI and deterministic guardrail reviews — for automated validation
+2. **Run the verifier rule review**: Use `zenable check` — Zenable's mix of AI and deterministic verifier rule reviews — for automated validation
    - Identify changed files (`git diff --name-only`, or user-specified)
    - Run `zenable check` against those files (or `zenable check --branch` for everything changed on the branch)
    - Parse the findings it reports (file:line, requirement attribution, enforcement mode)
@@ -114,7 +114,7 @@ Validate this database migration against our policies
 Ensure this feature follows our quality standards
 Review my changes before I commit them
 Does this code meet our standards?
-Run the guardrails on my changes
+Run the verifier rules on my changes
 ```
 
 ## Output Format
@@ -122,7 +122,7 @@ Run the guardrails on my changes
 Provide feedback in this structure:
 
 1. **Summary**: Brief overview of changes reviewed and overall assessment
-2. **Guardrail findings**: Results from `zenable check`
+2. **Verifier rule findings**: Results from `zenable check`
    - Pass/fail status
    - Specific violations with file:line references
    - The requirement each finding is attributed to, and its enforcement mode
@@ -148,7 +148,7 @@ git diff --name-only | zenable check
 ```
 
 For requirement context, use the Zenable MCP tools when the server is connected —
-`get_requirements` (active policies), `get_guardrails` (the rules enforcing them),
+`get_requirements` (active policies), `get_verifier_rules` (the rules enforcing them),
 and `get_findings` (historical findings for a repo).
 
 ## Important Notes

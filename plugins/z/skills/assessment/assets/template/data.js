@@ -179,7 +179,7 @@ window.REPORT = {
   /* Custom Requirements Review                                         */
   /*                                                                    */
   /* One section per user-defined requirement from the interview. Each  */
-  /* mirrors a Zenable scope/guardrail created via the MCP server.      */
+  /* mirrors a Zenable scope/verifier rule created via the MCP server.  */
   /* Use `requirementId` so findings can link back here.                */
   /*                                                                    */
   /* status ∈ { ok | ok-with-concern | risk | scope-limited }           */
