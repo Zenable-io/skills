@@ -26,6 +26,11 @@ SCRIPTS="${CLAUDE_PLUGIN_ROOT}/skills/prfeedback/scripts"
 [ -x "${SCRIPTS}/dump-unresolved-comments.sh" ] || SCRIPTS="<absolute path of this skill's directory>/scripts"
 ```
 
+If this skill was loaded from an MCP server, it has no directory on disk: its files
+are resources with `skill://` URIs. Read each file the skill lists under `scripts/`,
+write it into a new temporary directory, `chmod +x` it, and set `SCRIPTS` to that
+directory.
+
 Verify with `ls "${SCRIPTS}"` before continuing; both scripts must be listed.
 
 For each comment, determine if code changes are needed:

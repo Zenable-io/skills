@@ -1,6 +1,6 @@
 ---
 name: setup
-description: Guided Zenable onboarding — discover the standards a codebase already has written down, mine them into candidate requirements, triage them with the user, and persist the survivors as scoped Zenable requirements through the Zenable MCP. Use this skill whenever the user wants to onboard a codebase onto Zenable, set up custom requirements/guardrails for a project, or invokes `/z:setup`. Also trigger for phrases like "onboard this repo to Zenable", "set up Zenable requirements for this codebase", or "get Zenable guardrails going here".
+description: Guided Zenable onboarding — discover the standards a codebase already has written down, mine them into candidate requirements, triage them with the user, and persist the survivors as scoped Zenable requirements through the Zenable MCP. Use this skill whenever the user wants to onboard a codebase onto Zenable, set up custom requirements/verifier rules for a project, or invokes `/z:setup`. Also trigger for phrases like "onboard this repo to Zenable", "set up Zenable requirements for this codebase", or "get Zenable verifier rules going here".
 allowed-tools: Bash(which zenable:*), Bash(zenable version:*), Bash(zenable auth can-i:*), Bash(zenable auth whoami:*), Bash(echo:*), Bash(git remote get-url:*)
 ---
 

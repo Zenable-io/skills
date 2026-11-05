@@ -133,7 +133,12 @@ zenable-assessment/<ts>/
   dist/                   # GENERATED build output; includes assessment-bundle.zip
 ```
 
-Copy the bundled workspace instructions and report template into it:
+Copy the bundled workspace instructions and report template into it.
+`<skill-path>` is the directory containing this SKILL.md. If this skill was loaded
+from an MCP server, it has no directory on disk: its files are resources with
+`skill://` URIs. Read each file the skill lists under `scripts/` and `assets/`,
+write it into a new temporary directory at the same relative path, and use that
+directory as `<skill-path>`.
 
 ```bash
 cp <skill-path>/assets/workspace/AGENTS.md <workspace>/AGENTS.md

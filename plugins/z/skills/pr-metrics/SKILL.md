@@ -42,16 +42,20 @@ Ask the user two short questions, and accept "skip" for either:
   automation. The report also suggests candidates, so this can wait.
 - **Time window.** Default: from the first of the month 13 months ago to today.
 
-Then run the fetch script from this skill's directory:
+Then run the fetch script that ships with this skill. `<skill-path>` is the
+directory containing this SKILL.md. If this skill was loaded from an MCP server, it
+has no directory on disk: its files are resources with `skill://` URIs. Read each
+file the skill lists under `scripts/` and `assets/`, write it into a new temporary
+directory at the same relative path, and use that directory as `<skill-path>`.
 
 ```bash
-uv run --script scripts/fetch_pr_metrics.py --out ./pr-metrics-report \
+uv run --script <skill-path>/scripts/fetch_pr_metrics.py --out ./pr-metrics-report \
   --automation-authors "release-user,deploy-user"
 ```
 
 Options: `--start YYYY-MM-DD`, `--end YYYY-MM-DD`, `--out DIR`, `--title TEXT`,
 `--automation-authors CSV`. If `uv` is not available, `python3
-scripts/fetch_pr_metrics.py` works too (Python 3.11+, standard library only).
+<skill-path>/scripts/fetch_pr_metrics.py` works too (Python 3.11+, standard library only).
 
 The script calls `zenable api raw` for PR history, history import progress, and
 your connected GitHub repositories, then writes `data/*.json` and `index.html`
