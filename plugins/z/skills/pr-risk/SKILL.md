@@ -1,24 +1,24 @@
 ---
 name: pr-risk
-description: Dispute a Zenable pull request (GitHub PR) or merge request (GitLab MR) risk assessment — read the recorded grading behind its risk level and the profile's PR risk eval suite, explain which risk setting (rubric weights, disabled dimensions, risk floors) drove the level, and record the dispute as an eval case so Zenable scores it and proposes a setting change for approval. Use this skill whenever the user disagrees with a PR or MR risk level, says something like "this merged as low, it should have been high", asks why a PR got its risk level, which risk setting would have changed it, or wants to give feedback on or dispute a risk assessment, or invokes `/z:pr-risk`.
+description: Give feedback on a Zenable pull request (GitHub PR) or merge request (GitLab MR) risk assessment — read the recorded grading behind its risk level and the profile's PR risk eval suite, explain which risk setting (rubric weights, disabled dimensions, risk floors) drove the level, and record the feedback as an eval case so Zenable scores it and proposes a setting change for approval. Use this skill whenever the user disagrees with a PR or MR risk level, says something like "this merged as low, it should have been high", asks why a PR got its risk level, which risk setting would have changed it, or wants to give feedback on or dispute a risk assessment, or invokes `/z:pr-risk`.
 allowed-tools: Bash(which zenable:*), Bash(zenable version:*), Bash(zenable auth can-i:*), Bash(zenable auth whoami:*), Bash(zenable api pr-risk:*), Bash(gh pr view:*), Bash(glab mr view:*), Bash(echo:*)
 ---
 
-# PR risk dispute
+# PR risk feedback
 
-Help the user dispute a risk assessment they disagree with. Read what Zenable
+Help the user give feedback on a risk assessment they disagree with. Read what Zenable
 recorded when it graded the PR/MR, explain what drove the level, and record
-their dispute so Zenable searches for the configuration change.
+their feedback so Zenable searches for the configuration change.
 
-The loop after a dispute runs in Zenable, not in this skill:
+The loop after feedback runs in Zenable, not in this skill:
 
-1. **Dispute.** `add_pr_risk_eval_case` stores the dispute as a labelled case
+1. **Feedback.** `add_pr_risk_eval_case` stores the feedback as a labelled case
    on the config profile the repository used, and queues a scoring run.
 2. **Scored.** Zenable generates variants of the same PR/MR (files, findings
    or rubric dimensions in reverse order; description removed), each labelled
    with the recorded level, then scores the current settings against every
    case on the profile.
-3. **Proposal.** When one weight or floor change fixes the disputed cases
+3. **Proposal.** When one weight or floor change fixes the feedback cases
    without breaking any other case, a configuration proposal appears in
    **Settings > Configuration** on that profile.
 4. **Approve.** A person accepts it there. If an approval flow covers
@@ -89,7 +89,7 @@ with `zenable api pr-risk list -h` if a call fails.
 
 For each run, read the level, `risk_detail` (dimension scores, composite,
 `floor_level`, `worst_file`), the merge-gate decision (`gate_merge`), and any
-existing disputes.
+existing `feedback`.
 
 Then call `get_pr_risk_eval_suite` with `repository_url`, `change_ref`,
 and optionally `coverage_run_id` (default: the newest run). It costs 10
@@ -101,7 +101,7 @@ credits. It returns:
   scoring run with its exact agreement, the latest comparison (fixed,
   regressed, unchanged), and any pending proposal with its status.
 
-If the bundle already holds a dispute on this run, or a pending proposal
+If the bundle already holds feedback on this run, or a pending proposal
 fixes it, tell the user and skip to step 3.
 
 Tell the user plainly which run the merge gate trusted (`merged_by_gate`) and
@@ -112,7 +112,7 @@ what level it recorded.
 From `recorded_grading`, show the user which file was worst, which dimensions
 scored highest in it, and which weights and floors set the level. Level
 thresholds are fixed; only weights, enabled dimensions and floors can move a
-level. Do not try to apply a change. Recording the dispute (step 4) lets
+level. Do not try to apply a change. Recording the feedback (step 4) lets
 Zenable score weight, enabled-dimension and floor changes against every case
 on the profile and propose one in **Settings > Configuration** when it breaks
 nothing; the user accepts it there, or makes the change by hand.
@@ -121,19 +121,19 @@ A floor is often the honest lever: it sets a minimum level from facts about
 the change (`floor_metric_values`) rather than overriding the grader's
 judgment.
 
-## 4. Record the dispute
+## 4. Record the feedback
 
 Ask the user for consent, then call `add_pr_risk_eval_case` with:
 
 - `repository_url` and `change_ref`
 - `coverage_run_id` (optional; default the newest run)
-- `expected_level`: must differ from the recorded level; the tool refuses a
-  dispute that agrees with it
+- `expected_level`: must differ from the recorded level; the tool refuses
+  feedback that agrees with it
 - `rationale`: at most 1024 characters; the user's one-sentence reason, plus
   the setting they think should change
 
-Disputing is free. Each person has one dispute per run; disputing again
-updates it. The result says a scoring run was queued: quote that to the user,
+Giving feedback is free. Each person has one label per run; giving feedback
+again updates it. The result says a scoring run was queued: quote that to the user,
 and tell them the proposal, if one comes, appears in **Settings >
 Configuration** on the profile, with the bundle and scores under
 **Evaluations > PR risk**.
