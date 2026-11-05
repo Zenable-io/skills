@@ -151,7 +151,7 @@ Ask the user for consent, then call `add_pr_risk_eval_case` with:
 - `rationale`: at most 1024 characters; the user's one-sentence reason, plus
   the setting they think should change
 
-Giving feedback is free. Each person has one label per run; giving feedback
+Giving feedback costs 10 credits. Each person has one label per run; giving feedback
 again updates it. The result says a scoring run was queued: quote that to the user,
 and tell them the proposal, if one comes, appears in **Settings >
 Configuration** on the profile, with the bundle and scores under
