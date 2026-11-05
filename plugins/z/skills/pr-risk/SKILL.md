@@ -60,20 +60,30 @@ or point them to the
 
 ## 1. Identify the PR/MR
 
-Take the PR/MR from the user's words. To resolve a number or URL:
+If the user named a PR/MR by number or URL, use that one. Otherwise, look for
+one open on the current branch:
 
 ```bash
-gh pr view <number|url> --json url,number,baseRepository,headRefOid,mergedAt
+gh pr view --json url,number,title,state,headRefOid,statusCheckRollup
 # GitLab
-glab mr view <number|url>
+glab mr view -F json
+```
+
+When one is found, show the user its number, title and URL, and ask whether
+that is the PR/MR they want to give feedback on. Wait for their answer. If
+there is none, or it is the wrong one, ask which PR/MR they mean, then resolve
+it:
+
+```bash
+gh pr view <number|url> --json url,number,title,state,headRefOid,statusCheckRollup
+# GitLab
+glab mr view <number|url> -F json
 ```
 
 - `repository_url` is the **base** repository web URL, for example
-  `https://github.com/org/repo`, not a fork.
+  `https://github.com/org/repo`, not a fork. Take it from the PR URL without
+  `/pull/<n>`, or the MR `web_url` without `/-/merge_requests/<n>`.
 - `change_ref` is the PR/MR number as a string, for example `"42"`.
-
-If the user has not said which level they expected and why, ask before going
-further.
 
 ## 2. Read the record
 
@@ -88,8 +98,17 @@ The list defaults to the trailing 30 days. For an older PR/MR, add
 with `zenable api pr-risk list -h` if a call fails.
 
 For each run, read the level, `risk_detail` (dimension scores, composite,
-`floor_level`, `worst_file`), the merge-gate decision (`gate_merge`), and any
-existing `feedback`.
+`floor_level`, `worst_file`, `level_thresholds`), the merge-gate decision
+(`gate_merge`), and any existing `feedback`.
+
+Show the user the latest assessment before going further: its level, composite
+score, score for each dimension, worst file, and any floor that applied.
+Compare its `commit_sha` with the PR/MR head. If they differ, say which commit
+was assessed and that the newest commit has not been. On GitHub, also report
+the `Zenable Risk Assessment` check from `statusCheckRollup`.
+
+If the user has not said which level they expected and why, ask now. If they
+are happy with the level, stop here.
 
 Then call `get_pr_risk_eval_suite` with `repository_url`, `change_ref`,
 and optionally `coverage_run_id` (default: the newest run). It costs 10
