@@ -89,8 +89,7 @@ edit with nothing else to configure. What you get:
   as a local report; **`/z:pr-risk`** to give feedback on a PR/MR risk level you
   disagree with, which Zenable scores against your risk settings and turns into
   a setting proposal; plus
-  `/z:feat`,
-  `/z:debug`, `/z:addtests`, `/z:doublecheck`, `/z:rebase`, `/z:prfeedback`, and
+  `/z:debug`, `/z:doublecheck`, `/z:rebase`, `/z:prfeedback`, and
   `/z:researchbranch`.
 - **CLI** — the local engine behind the hooks and skills, running deterministic,
   token-free verifier rule checks.

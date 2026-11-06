@@ -34,7 +34,9 @@ directory.
 Verify with `ls "${SCRIPTS}"` before continuing; both scripts must be listed.
 
 For each comment, determine if code changes are needed:
-- If YES: make changes, commit, push, then mark thread as addressed with commit hash
+- If YES: make changes, run the check that proves this comment's issue is fixed, commit,
+  push, then mark thread as addressed with commit hash. If nothing can show the fix works,
+  add the test, log, or readable state that does as part of the change.
 - If NO: reply to thread with custom comment (no commit needed)
 
 Use the `mark-addressed.sh` script to either:

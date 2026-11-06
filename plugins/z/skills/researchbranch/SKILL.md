@@ -18,4 +18,9 @@ the current state is (as in, has it been peer reviewed, are there unresolved com
 etc). ultrathink and summarize the intent, current state, rationale, outstanding work to
 be done.
 
+If the branch adds or changes a status field, a set of booleans, or timestamps that
+together mean a state, list the states, what writes each transition, and what rejects an
+illegal one. Stay inside what the branch touched, and count an illegal transition nothing
+rejects as outstanding work.
+
 If the user narrowed the scope when invoking this skill, focus the summary accordingly.

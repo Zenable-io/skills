@@ -9,6 +9,12 @@ Double check your work make sure it is good, not over engineered, that your test
 that it's elegant and not messy, that you use standard SOLID principles for things that
 are repeated more than 2 times, and most importantly that you didn't hallucinate.
 
+List each behavior this branch changed with the command or observation that proves it,
+including the failure path, and run each one. A check you have never seen fail proves
+nothing: break the behavior, confirm the check fails, then restore the exact same code and
+confirm it passes. If a behavior can't be observed, add the test, log, or readable state
+that shows it as part of this change.
+
 Make sure that any code changes or improvements / additions made in this branch did not
 leave any code orphaned; if it did, we prefer to clean it up so do some research and
 confirm that any orphaned code or docs have been removed.
