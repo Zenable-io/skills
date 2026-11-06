@@ -1,6 +1,6 @@
 [project]
 name = "skills"
-version = "4.0.0"
+version = "5.0.0"
 description = "Zenable skills and integrations for AI coding agents"
 authors = [
     { name = "Zenable", email = "support@zenable.io" }
