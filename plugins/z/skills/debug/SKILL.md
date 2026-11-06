@@ -13,3 +13,10 @@ falsify each one using observable evidence. Avoid speculation and loops—focus 
 structured reasoning that converges on the most likely cause. Perform deep research and
 ultrathink, perform tests to validate your hypotheses, and provide evidence of any
 claims you make.
+
+If the symptom is stuck, stale, repeated, or out of order, look for a state nobody wrote
+down: a status field, a set of booleans, or timestamps that together mean a state. For
+this bug's path only, list the states, what writes each transition, and what rejects an
+illegal one, then say which transition the failing case took or missed.
+
+Once the fix is in, close with the `doublecheck` skill.

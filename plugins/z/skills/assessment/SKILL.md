@@ -69,7 +69,8 @@ Agree on depth before doing analysis:
   appendices unless they serve the stated goal.
 - **Balanced** — the default workflow.
 - **Exhaustive** — auditor-grade detail, richer evidence capture, actor/action
-  matrices, trust-boundary diagrams, and the Phase 4 claim audit.
+  matrices, state and transition lists, trust-boundary diagrams, and the Phase 4
+  claim audit.
 
 Propose a depth rather than asking cold: size the repo first (files, languages,
 entry points, commit count) and weigh it against the interview — a small repo
@@ -281,6 +282,12 @@ for it** — tests, fixtures, config, templates, and string or dynamic reference
 included. The same check applies to "not validated", "never called", and "no
 test covers this": confirm the negative in primary evidence, not by the absence
 of a hit in the files you happened to read.
+
+**At Exhaustive depth, find the implicit state machines:** status fields, sets of
+booleans, and timestamps that together mean a state. For each, list the states,
+what writes each transition, and what rejects an illegal one. An illegal
+transition nothing rejects follows the rule above: a finding with a scenario, or
+an Appendix B entry without one.
 
 Keep AI-pass findings in the same schema as the `zenable check` JSON output so
 the merge is mechanical. Write them to `evidence/findings/ai-review.json` as

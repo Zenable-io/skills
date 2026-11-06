@@ -124,8 +124,8 @@ skills/
 │           │   └── SKILL.md      # Autonomous conformance reviewer
 │           ├── setup/            # /z:setup onboarding
 │           ├── triage/           # /z:triage review-comment resolver
-│           └── …                 # feat, debug, addtests, doublecheck,
-│                                 # rebase, prfeedback, researchbranch
+│           └── …                 # debug, doublecheck, rebase, prfeedback,
+│                                 # researchbranch
 ├── tests/
 │   └── zenable_skills/
 │       ├── schemas/              # Vendored upstream Agent Plugins schema
@@ -188,7 +188,7 @@ Error: plugin.json name `zenable` does not match marketplace plugin name `z`
 
 So a portable manifest named anything other than `z` passes every schema check and
 still cannot be installed. Claude Code, meanwhile, namespaces skills by its own
-manifest's name, which is what makes them `/z:feat` rather than `/zenable:feat`.
+manifest's name, which is what makes them `/z:debug` rather than `/zenable:debug`.
 Renaming either manifest breaks one client or the other.
 
 ### Modifying Hooks
