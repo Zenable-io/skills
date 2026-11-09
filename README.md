@@ -163,7 +163,7 @@ Then add the hook to `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/Zenable-io/skills
-    rev: v3 # Consider `pre-commit autoupdate --freeze` to safely lock and maintain this
+    rev: v5 # Consider `pre-commit autoupdate --freeze` to safely lock and maintain this
     hooks:
       - id: zenable-check
 ```
