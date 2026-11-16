@@ -1,6 +1,6 @@
 ---
 name: diagram
-description: Explain a flow, design, or change with the smallest visual that makes the point — a Mermaid state, sequence, or flow diagram, or a text sketch such as pseudocode, a call tree, a file tree, or a shape diff — instead of prose. Labels fit the reader, diagrams stay small, problem states are marked, and every node traces to code. Can show what a branch or pull request changes in a flow, so a reviewer can approve an agent's change by its behaviour. Use when the user says "show me", "draw", "diagram", "sketch", "chart", or "visualize", asks how a flow, request path, job, or lifecycle works, asks what a branch or PR changes, wants to review an agent's change without reading every line, when a PR description or report needs a visual, when another skill needs a diagram, or invokes `/z:diagram`.
+description: Draw a flow, design, or code change as a small Mermaid diagram or text sketch built from the code. Use when the user says "show me", "draw", "diagram", "sketch", "chart", or "visualize"; asks how a flow, request path, job, or lifecycle works; asks what a branch, PR, or MR changes in behaviour, or wants to review an agent's change without reading every line; when a PR description, report, or explanation would be clearer with a visual than with prose; when another skill needs a diagram; or invokes `/z:diagram`.
 ---
 
 # Show it with a diagram

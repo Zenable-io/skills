@@ -1,6 +1,6 @@
 ---
 name: state-machines
-description: Find the implicit state machines in a codebase — status fields, groups of booleans, nullable timestamps, retry counters, and effect chains that together mean a state — and write down the rules they must follow, so every future change by an agent or a person can be checked against them. Lists each machine's states, transitions, stuck states, races, and impossible combinations, replays each finding against the real code, draws the important flows, and proposes the rules as Zenable requirements. Use when the user asks to "find the state machines", map a lifecycle or status flow, asks why records or jobs get stuck, stale, or orphaned, worries about races between workers or retries, is about to add a new status or flag, or invokes `/z:state-machines`.
+description: Find the implicit state machines in code (status fields, flag groups, nullable timestamps, retry counters, event chains), find their stuck states, races, and impossible combinations, and propose the rules they must follow as Zenable requirements. Use when the user asks to find or map state machines, a lifecycle, or a status flow; asks why records, jobs, or sessions get stuck, stale, orphaned, or duplicated; suspects a race between workers, retries, webhooks, or user actions; is about to add a new status, flag, or state field; wants the unwritten rules of a workflow written down; or invokes `/z:state-machines`.
 ---
 
 # Find the implicit state machines
