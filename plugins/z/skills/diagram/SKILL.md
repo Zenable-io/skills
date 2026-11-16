@@ -47,11 +47,11 @@ Use Mermaid, since most code hosts, editors, and docs tools render it.
 The reader's words are what make the diagram checkable by someone who doesn't know the
 code. Compare:
 
-- From the code: `PENDING --> READY: promote_pending()`
-- For the reader: `Waiting for a machine --> Ready to connect: a spare machine frees up`
+- From the code: `AWAITING_STOCK --> PACKING: on_inventory_reserved()`
+- For the reader: `Waiting for stock --> Being packed: the warehouse reserves the items`
 
-The second one lets a product owner say "that's wrong, it should time out after ten
-minutes" without asking what `promote_pending` does.
+The second one lets a product owner say "that's wrong, it should cancel after two
+days" without asking what `on_inventory_reserved` does.
 
 ## Keep it small
 
