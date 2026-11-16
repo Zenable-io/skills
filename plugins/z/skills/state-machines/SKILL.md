@@ -18,11 +18,13 @@ the status without its guard, an effect that fires in a state nobody expected. T
 of this skill is to write those rules down where every change can be checked against
 them. The map and the findings are the evidence for the rules.
 
-The user's request names the area, flow, or bug to start from. With no area named,
-search the whole repository, rank the candidates by how much a bug in them would hurt
-users (money, data, access, work that silently never finishes), and map the top few in
-depth. Three machines mapped with every writer and a replayed finding are worth more
-than twenty sketched from their field names, so say which candidates you left unmapped.
+The user's request names the area, flow, or bug to start from. Within that area, map
+every machine and check every one for every kind of problem below; a missed problem is
+the costly outcome, because nobody goes looking for it afterwards. Spend the expensive
+work, replaying findings against the code, on the findings that would hurt users most
+(money, data, access, work that silently never finishes), and list the rest as leads.
+With no area named, search the whole repository, rank the machines by that same harm,
+cover as many as you can in full, and say which ones you left unmapped.
 
 If a `state-machines.md` from an earlier run exists, start with "Refresh" below.
 
@@ -42,6 +44,12 @@ Search the code for these signs, and read each hit before you count it:
   that move a record along, webhooks, queue consumers, and scheduled jobs that pick up
   rows by status.
 - **Locks and ownership.** Claimed-by fields, mutexes, advisory locks, and idempotency keys.
+- **Delivery and timing configuration.** Retry counts, dead-letter queues, redrive
+  policies, visibility timeouts, function timeouts, and schedules, in infrastructure
+  templates and deployment config. These decide whether a failed step runs again or is
+  lost, so read them from the config itself. Comments and docs often describe retries or
+  a dead-letter queue that the config doesn't have; when they disagree, trust the config
+  and report the disagreement.
 
 Group the hits into machines. One machine is one thing that moves between states: an
 order, an upload, a session, a form, a deployment. Its state can be spread across
@@ -103,7 +111,13 @@ non-issue:
   a retry policy, or a dead-letter queue;
 - a combination that is legitimate: a documented intermediate state, a migration in
   progress, or a feature flag that keeps the path off;
-- a step that cannot happen: an event that only arrives in states that handle it.
+- a step that cannot happen: an event that only arrives in states that handle it, or
+  an error that the runtime can't raise there (cancellation inside synchronous code);
+- a behaviour that is intended: search the docs near the code (agent instruction files
+  such as `AGENTS.md` or `CLAUDE.md`, READMEs, design records, and comments at the call
+  site) for the behaviour. When it is documented as a deliberate tradeoff, report it
+  under "Documented choices" with the quote, not as a bug. The user may still want to
+  revisit it, but they need to know it was chosen.
 
 Then replay the steps against the real code, one step for each event: write a test, or
 reproduce it with the project's own tooling. If a step cannot happen, the map is wrong,
@@ -154,6 +168,9 @@ and say where you put it. It holds:
   deterministic check can enforce it, and which became requirements;
 - the findings, ranked by harm to users, each with its replayed steps and the evidence
   from the replay;
+- the leads you could not replay, each with why and your confidence;
+- documented choices: behaviour that looks like a bug but is documented as intended,
+  with the quote and where it lives;
 - one section per machine: what it is, its states and transitions with code locations,
   its diagram, and its rules;
 - a coverage record: for each machine, the files and functions its map describes, and
