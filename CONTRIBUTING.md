@@ -124,8 +124,8 @@ skills/
 │           │   └── SKILL.md      # Autonomous conformance reviewer
 │           ├── setup/            # /z:setup onboarding
 │           ├── triage/           # /z:triage review-comment resolver
-│           └── …                 # debug, doublecheck, rebase, prfeedback,
-│                                 # researchbranch
+│           └── …                 # debug, diagram, doublecheck, rebase,
+│                                 # prfeedback, researchbranch, state-machines
 ├── tests/
 │   └── zenable_skills/
 │       ├── schemas/              # Vendored upstream Agent Plugins schema

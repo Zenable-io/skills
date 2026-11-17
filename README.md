@@ -88,7 +88,11 @@ edit with nothing else to configure. What you get:
   to render your organization's PR delivery history before and after Zenable
   as a local report; **`/z:pr-risk`** to give feedback on a PR/MR risk level you
   disagree with, which Zenable scores against your risk settings and turns into
-  a setting proposal; plus
+  a setting proposal; **`/z:state-machines`** to find the state machines hiding
+  in status fields and flags, show where they get stuck or reach impossible
+  states, and propose the rules they must follow as requirements;
+  **`/z:diagram`** to draw a flow from the code, or what a change does to it, as
+  a diagram anyone can read at a glance; plus
   `/z:debug`, `/z:doublecheck`, `/z:rebase`, `/z:prfeedback`, and
   `/z:researchbranch`.
 - **CLI** — the local engine behind the hooks and skills, running deterministic,
@@ -108,7 +112,7 @@ Deep dive: [Claude Code integration](https://www.zenable.app/docs/integrations/m
 
 The same package is also a portable
 [Agent Plugins 1.0](https://agent-plugins.org/specification) plugin, so clients
-that implement the spec load the identical twelve skills with no Zenable-specific
+that implement the spec load the identical thirteen skills with no Zenable-specific
 glue. Install it through the client's own plugin flow, adding
 `Zenable-io/skills` as a marketplace and then installing `z@zenable`.
 
