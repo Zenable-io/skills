@@ -20,7 +20,7 @@ import xml.etree.ElementTree as ElementTree
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS = REPO_ROOT / "plugins" / "z" / "skills" / "prfeedback" / "scripts"
+SCRIPTS = REPO_ROOT / "plugins" / "zenable" / "skills" / "prfeedback" / "scripts"
 DUMP = SCRIPTS / "dump-unresolved-comments.sh"
 MARK = SCRIPTS / "mark-addressed.sh"
 STUB = Path(__file__).resolve().parent / "gh_stub.py"
