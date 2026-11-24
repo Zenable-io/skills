@@ -78,9 +78,10 @@ Install the plugin from this repo's marketplace:
 }
 ```
 
-On first session the plugin sets itself up — it installs the `zenable` CLI and
-wires the post-edit hooks for you, so verifier rule review starts running on every
-edit with nothing else to configure. What you get:
+Install the `zenable` CLI from [cli.zenable.app](https://cli.zenable.app); the
+[setup docs](https://www.zenable.app/docs/integrations/mcp/getting-started) have
+the details. Once it is installed, the plugin wires the post-edit hooks for you at the
+start of each session. If it is missing, Claude asks before installing it. What you get:
 
 - **Hooks** — automatic verifier rule review after each file edit. Violations are
   returned to the agent to fix in place.
