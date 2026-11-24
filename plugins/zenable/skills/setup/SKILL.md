@@ -27,11 +27,11 @@ Before any collection work, verify the environment and tell the user what you fo
 
 ### zenable CLI
 
-zenable CLI location: !`which zenable 2>/dev/null || echo "NOT INSTALLED"`
+zenable CLI location: run `which zenable 2>/dev/null || echo "NOT INSTALLED"`
 
-zenable CLI version: !`zenable version 2>/dev/null || echo "unavailable"`
+zenable CLI version: run `zenable version 2>/dev/null || echo "unavailable"`
 
-If the location above shows "NOT INSTALLED", ask the user for permission before
+If the location prints "NOT INSTALLED", ask the user for permission before
 installing anything on their machine. If they approve, get the current install
 command for their operating system from https://cli.zenable.app (there is one for
 macOS/Linux and one for Windows) and run it. Read it from the page each time rather
@@ -45,20 +45,19 @@ skill needs the CLI for durable Zenable requirements support.
 
 ### Sign-in and plan
 
-Permission check: !`zenable auth can-i get_findings 2>/dev/null; echo "exit code $?"`
+Permission check: run `zenable auth can-i get_findings 2>/dev/null; echo "exit code $?"`
 
 This one call confirms the user is signed in **and** their account has an active
 trial or paid plan: `get_findings` is a paid-plan tool, so the server answers `yes`
-only for trial and paid accounts. If your client didn't run the command above for
-you, run it yourself.
+only for trial and paid accounts.
 
 Continue only on exit code 0. For any other code, look it up in the
 [Zenable CLI reference](https://docs.zenable.io/integrations/zenable/commands), tell the
 user what it means and how to fix it, and stop until the check passes.
 
-Authenticated account: !`zenable auth whoami 2>&1 || echo "NOT AUTHENTICATED"`
+Authenticated account: run `zenable auth whoami 2>&1 || echo "NOT AUTHENTICATED"`
 
-Use the identity above when you tell the user what you found.
+Use that identity when you tell the user what you found.
 
 ### Zenable MCP
 
@@ -86,7 +85,7 @@ If you had to install the MCP server, the user must authenticate to it manually,
 
 Do this now, not at requirement-creation time. Requirements are scoped to repositories, and discovering at the end that the repo doesn't resolve means dozens of failed creates and a confused user.
 
-Repo remote: !`git remote get-url origin 2>/dev/null || echo "NO REMOTE"`
+Repo remote: run `git remote get-url origin 2>/dev/null || echo "NO REMOTE"`
 
 Ask the Zenable MCP whether this repository is known to the tenant. If it resolves, note the identifier for Phase 2. If it does not resolve — or there's no remote at all — settle the fallback now while it's a single decision:
 
