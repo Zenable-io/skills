@@ -35,7 +35,7 @@ AGENT_PLUGINS_SCHEMA_ID = "https://agent-plugins.org/schemas/1.0.0/plugin.schema
 # `name` is included: Codex matches the root manifest's name against the marketplace
 # entry, and Claude Code namespaces skills by its own manifest's name (`/zenable:triage`), so
 # the two names diverging breaks installation in one client and the namespace in the other.
-SHARED_FIELDS = ("name", "version", "description", "homepage", "repository", "author", "keywords")
+SHARED_FIELDS = ("name", "version", "description", "homepage", "repository", "license", "author", "keywords")
 
 # Agent Skills specification: 1-64 chars, lowercase alphanumeric and hyphens, must not
 # start or end with a hyphen, and must not contain consecutive hyphens.
