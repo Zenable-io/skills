@@ -1,7 +1,6 @@
 ---
 name: pr-risk
 description: Give feedback on a Zenable pull request (GitHub PR) or merge request (GitLab MR) risk assessment — read the recorded grading behind its risk level and the profile's PR risk eval suite, explain which risk setting (rubric weights, disabled dimensions, risk floors) drove the level, and record the feedback as an eval case so Zenable scores it and proposes a setting change for approval. Use this skill whenever the user disagrees with a PR or MR risk level, says something like "this merged as low, it should have been high", asks why a PR got its risk level, which risk setting would have changed it, or wants to give feedback on or dispute a risk assessment, or invokes `/zenable:pr-risk`.
-allowed-tools: Bash(which zenable:*), Bash(zenable version:*), Bash(zenable auth can-i:*), Bash(zenable auth whoami:*), Bash(zenable api pr-risk:*), Bash(gh pr view:*), Bash(glab mr view:*), Bash(echo:*)
 ---
 
 # PR risk feedback
