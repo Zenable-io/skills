@@ -101,7 +101,7 @@ skills/
 │       ├── semantic-release.yml  # Automated releases
 │       └── update.yml            # Dependency updates
 ├── plugins/
-│   └── z/                        # One directory, two plugin formats
+│   └── zenable/                  # One directory, two plugin formats
 │       ├── plugin.json           # Agent Plugins 1.0 manifest (portable)
 │       ├── .claude-plugin/
 │       │   └── plugin.json       # Claude Code manifest
@@ -110,20 +110,20 @@ skills/
 │       ├── scripts/
 │       │   └── bootstrap.sh      # SessionStart CLI bootstrap
 │       └── skills/               # Shared by BOTH formats
-│           ├── assessment/       # /z:assessment — setup + validation + reporting
+│           ├── assessment/       # /zenable:assessment — setup + validation + reporting
 │           │   ├── SKILL.md
 │           │   ├── assets/       # HTML report template + workspace rules
 │           │   ├── references/   # Evidence-model tool reference
 │           │   └── scripts/      # Evidence transforms + bundle builder (+ tests)
-│           ├── pr-metrics/       # /z:pr-metrics — local PR delivery history report
+│           ├── pr-metrics/       # /zenable:pr-metrics — local PR delivery history report
 │           │   ├── SKILL.md
 │           │   ├── assets/       # Report page
 │           │   ├── references/   # Data contract
 │           │   └── scripts/      # Fetch script (+ tests)
 │           ├── review/
 │           │   └── SKILL.md      # Autonomous conformance reviewer
-│           ├── setup/            # /z:setup onboarding
-│           ├── triage/           # /z:triage review-comment resolver
+│           ├── setup/            # /zenable:setup onboarding
+│           ├── triage/           # /zenable:triage review-comment resolver
 │           └── …                 # debug, diagram, doublecheck, rebase,
 │                                 # prfeedback, researchbranch, state-machines
 ├── tests/
@@ -143,13 +143,13 @@ skills/
 Every capability is a **skill**. Don't add slash commands: Agent Plugins 1.0 has
 no portable home for them, so a command would work in Claude Code and silently
 disappear everywhere else. Claude Code surfaces plugin skills under the same
-`/z:<name>` namespace it uses for commands, so a skill loses nothing.
+`/zenable:<name>` namespace it uses for commands, so a skill loses nothing.
 
-1. Create `plugins/z/skills/my-skill/SKILL.md`:
+1. Create `plugins/zenable/skills/my-skill/SKILL.md`:
    ```yaml
    ---
    name: my-skill
-   description: Clear description with trigger keywords. Use when..., or invokes `/z:my-skill`.
+   description: Clear description with trigger keywords. Use when..., or invokes `/zenable:my-skill`.
    allowed-tools: Read, Write, Edit, Bash
    ---
 
@@ -160,7 +160,7 @@ disappear everywhere else. Claude Code surfaces plugin skills under the same
 
    The frontmatter `name` must match the directory name, and `description` must
    say both what the skill does and when to use it. Name the slash command as
-   `/z:my-skill` — the bare `/my-skill` is not a real command, and advertising it
+   `/zenable:my-skill` — the bare `/my-skill` is not a real command, and advertising it
    sends users somewhere that does not exist.
 
 2. Keep any scripts, references, or assets the skill needs **inside** the skill
@@ -169,31 +169,31 @@ disappear everywhere else. Claude Code surfaces plugin skills under the same
 
 3. Run `task test`. It validates both manifests, the marketplace catalogs, and
    every skill — frontmatter, naming rules, description length, and the
-   `/z:<name>` command each description advertises.
+   `/zenable:<name>` command each description advertises.
 
 ### Changing plugin metadata
 
-`plugins/z/plugin.json` (Agent Plugins) and `plugins/z/.claude-plugin/plugin.json`
+`plugins/zenable/plugin.json` (Agent Plugins) and `plugins/zenable/.claude-plugin/plugin.json`
 (Claude Code) describe the same package and must be edited together — `task test`
 fails if any shared field drifts, `name` included.
 
-The name is `z` everywhere — both manifests and both marketplace catalogs. That is
+The name is `zenable` everywhere — both manifests and both marketplace catalogs. That is
 not cosmetic. A client supporting both formats prefers the **portable** manifest,
 and Codex additionally requires its `name` to equal the marketplace entry name:
 
 ```console
-$ codex plugin add z@zenable
-Error: plugin.json name `zenable` does not match marketplace plugin name `z`
+$ codex plugin add zenable@zenable
+Error: plugin.json name `z` does not match marketplace plugin name `zenable`
 ```
 
-So a portable manifest named anything other than `z` passes every schema check and
+So a portable manifest named anything other than `zenable` passes every schema check and
 still cannot be installed. Claude Code, meanwhile, namespaces skills by its own
-manifest's name, which is what makes them `/z:debug` rather than `/zenable:debug`.
+manifest's name, which is what makes them `/zenable:debug`.
 Renaming either manifest breaks one client or the other.
 
 ### Modifying Hooks
 
-Edit `plugins/z/hooks/hooks.json`:
+Edit `plugins/zenable/hooks/hooks.json`:
 ```json
 {
   "hooks": {
@@ -218,7 +218,7 @@ task test
 
 # Install in Claude Code (from repo root)
 /plugin marketplace add ./
-/plugin install z@zenable
+/plugin install zenable@zenable
 ```
 
 `task test` is the whole check — it covers everything an external validator would

@@ -23,8 +23,8 @@ plugin's own paths, and third-party names like `echarts` or `mermaid`.
 The plugin version lives in **three** manifests:
 
 - `.claude-plugin/marketplace.json` → `plugins[0].version`
-- `plugins/z/.claude-plugin/plugin.json` → `version`
-- `plugins/z/plugin.json` (Agent Plugins 1.0) → `version`
+- `plugins/zenable/.claude-plugin/plugin.json` → `version`
+- `plugins/zenable/plugin.json` (Agent Plugins 1.0) → `version`
 
 Claude Code reads the version from these manifests, **not** from git tags. If they
 disagree with the released tag, `/plugin list` reports the stale manifest value and

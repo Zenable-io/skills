@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SKILLS_DIR = REPO_ROOT / "plugins" / "z" / "skills"
+SKILLS_DIR = REPO_ROOT / "plugins" / "zenable" / "skills"
 SKILLS_CLI = "skills@1.7.2"
 ANSI = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]")
 

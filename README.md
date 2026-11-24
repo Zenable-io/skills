@@ -53,11 +53,16 @@ reconfigure when your team adopts a new tool.
 
 ### Claude Code plugin
 
+> **Renamed:** the plugin was `z` before this release. Commands moved from `/z:<name>` to
+> `/zenable:<name>`. Existing users may need to run `/plugin install zenable@zenable` once;
+> Claude Code then updates user, project, and local settings. Admins must update
+> `enabledPlugins` in managed settings themselves.
+
 Install the plugin from this repo's marketplace:
 
 ```bash
 /plugin marketplace add Zenable-io/skills
-/plugin install z@zenable
+/plugin install zenable@zenable
 ```
 
 **Team setup** — commit this to `.claude/settings.json` so everyone gets it:
@@ -69,7 +74,7 @@ Install the plugin from this repo's marketplace:
       "source": {"source": "github", "repo": "Zenable-io/skills"}
     }
   },
-  "enabledPlugins": {"z@zenable": true}
+  "enabledPlugins": {"zenable@zenable": true}
 }
 ```
 
@@ -79,22 +84,22 @@ edit with nothing else to configure. What you get:
 
 - **Hooks** — automatic verifier rule review after each file edit. Violations are
   returned to the agent to fix in place.
-- **Skills** — thirteen of them, all invocable as `/z:<name>`. **`/z:review`**
-  for autonomous, requirement-aware code review; **`/z:setup`** to onboard a
+- **Skills** — thirteen of them, all invocable as `/zenable:<name>`. **`/zenable:review`**
+  for autonomous, requirement-aware code review; **`/zenable:setup`** to onboard a
   codebase by turning the standards you've already written down into scoped
-  Zenable requirements; **`/z:assessment`** to run a full assessment on top of
-  those requirements and produce a deliverable report; **`/z:triage`** to address
-  unresolved Zenable review comments on the current PR/MR; **`/z:pr-metrics`**
+  Zenable requirements; **`/zenable:assessment`** to run a full assessment on top of
+  those requirements and produce a deliverable report; **`/zenable:triage`** to address
+  unresolved Zenable review comments on the current PR/MR; **`/zenable:pr-metrics`**
   to render your organization's PR delivery history before and after Zenable
-  as a local report; **`/z:pr-risk`** to give feedback on a PR/MR risk level you
+  as a local report; **`/zenable:pr-risk`** to give feedback on a PR/MR risk level you
   disagree with, which Zenable scores against your risk settings and turns into
-  a setting proposal; **`/z:state-machines`** to find the state machines hiding
+  a setting proposal; **`/zenable:state-machines`** to find the state machines hiding
   in status fields and flags, show where they get stuck or reach impossible
   states, and propose the rules they must follow as requirements;
-  **`/z:diagram`** to draw a flow from the code, or what a change does to it, as
+  **`/zenable:diagram`** to draw a flow from the code, or what a change does to it, as
   a diagram anyone can read at a glance; plus
-  `/z:debug`, `/z:doublecheck`, `/z:rebase`, `/z:prfeedback`, and
-  `/z:researchbranch`.
+  `/zenable:debug`, `/zenable:doublecheck`, `/zenable:rebase`, `/zenable:prfeedback`, and
+  `/zenable:researchbranch`.
 - **CLI** — the local engine behind the hooks and skills, running deterministic,
   token-free verifier rule checks.
 - **MCP** — full platform access for your agent: your requirements, verifier rules,
@@ -114,7 +119,7 @@ The same package is also a portable
 [Agent Plugins 1.0](https://agent-plugins.org/specification) plugin, so clients
 that implement the spec load the identical thirteen skills with no Zenable-specific
 glue. Install it through the client's own plugin flow, adding
-`Zenable-io/skills` as a marketplace and then installing `z@zenable`.
+`Zenable-io/skills` as a marketplace and then installing `zenable@zenable`.
 
 ### Skills CLI
 
@@ -129,7 +134,7 @@ npx skills add Zenable-io/skills --list             # see what's available
 ```
 
 Skills installed this way are invoked by their bare name (`/triage` rather than
-`/z:triage`) and don't include the plugin's post-edit hooks — use the plugin, or
+`/zenable:triage`) and don't include the plugin's post-edit hooks — use the plugin, or
 `zenable install`, for automatic review on every edit.
 
 ### Other AI editors

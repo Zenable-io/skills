@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Validate the plugin as both a Claude Code plugin and an Agent Plugins 1.0 package.
 
-`plugins/z` ships in two formats from one directory:
+`plugins/zenable` ships in two formats from one directory:
 
 - Claude Code reads `.claude-plugin/plugin.json`, `skills/`, and `hooks/hooks.json`.
 - Agent Plugins 1.0 clients read the root `plugin.json` and `skills/`. They ignore
@@ -12,10 +12,10 @@ A client that supports both formats prefers the *portable* manifest, not the
 client-specific one: codex-cli 0.147.0 reads the root `plugin.json` and refuses to
 install unless its `name` equals the marketplace entry name, failing with
 
-    plugin.json name `zenable` does not match marketplace plugin name `z`
+    plugin.json name `z` does not match marketplace plugin name `zenable`
 
 That rule is enforced in `check_marketplaces` below, and it is why both manifests and
-both catalogs agree on the name `z`. Because the root manifest is the one that wins,
+both catalogs agree on the name `zenable`. Because the root manifest is the one that wins,
 drift there is invisible rather than merely cosmetic, so every shared field -- `name`
 included -- is compared between the two manifests.
 """
@@ -26,14 +26,14 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-PLUGIN_ROOT = REPO_ROOT / "plugins" / "z"
+PLUGIN_ROOT = REPO_ROOT / "plugins" / "zenable"
 SCHEMA = Path(__file__).resolve().parent / "schemas" / "agent-plugins-1.0.0-plugin.schema.json"
 
 AGENT_PLUGINS_SCHEMA_ID = "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
 
 # Metadata that describes the same package in both manifests and so must agree.
 # `name` is included: Codex matches the root manifest's name against the marketplace
-# entry, and Claude Code namespaces skills by its own manifest's name (`/z:triage`), so
+# entry, and Claude Code namespaces skills by its own manifest's name (`/zenable:triage`), so
 # the two names diverging breaks installation in one client and the namespace in the other.
 SHARED_FIELDS = ("name", "version", "description", "homepage", "repository", "author", "keywords")
 
@@ -220,7 +220,7 @@ def check_mcp_not_bundled() -> None:
 
 
 def check_marketplaces(version: str | None, plugin_name: str | None) -> None:
-    """Both marketplace catalogs must resolve to `z@zenable` and the same directory.
+    """Both marketplace catalogs must resolve to `zenable@zenable` and the same directory.
 
     Distribution sits outside the Agent Plugins portable contract, so each client
     brings its own catalog format: Claude Code reads `.claude-plugin/marketplace.json`
@@ -262,13 +262,13 @@ def check_marketplaces(version: str | None, plugin_name: str | None) -> None:
         # Claude Code takes a bare path string; Codex takes {"source", "path"}.
         actual = source.get("path") if isinstance(source, dict) else source
         if actual != expected_path:
-            fail(f"{label} marketplace: `z` points at {actual!r}, expected {expected_path!r}")
+            fail(f"{label} marketplace: `zenable` points at {actual!r}, expected {expected_path!r}")
         else:
-            ok(f"{label} marketplace: z@zenable -> {expected_path}")
+            ok(f"{label} marketplace: zenable@zenable -> {expected_path}")
 
         if "version" in entry and version is not None and entry["version"] != version:
             fail(
-                f"{label} marketplace: `z` is version {entry['version']!r}, but the "
+                f"{label} marketplace: `zenable` is version {entry['version']!r}, but the "
                 f"plugin manifests say {version!r}"
             )
 
@@ -277,7 +277,7 @@ def check_advertised_command(skill: str, description: str, namespace: str, names
     """Check that a description advertises its own slash command and no other.
 
     Claude Code surfaces plugin skills under the plugin's own namespace, so `triage`
-    is reachable as `/z:triage` and never as `/triage`. A description that promises
+    is reachable as `/zenable:triage` and never as `/triage`. A description that promises
     the bare form points users at a command that does not exist, and nothing else in
     the package would catch it -- the skill still loads and still auto-activates.
     """
@@ -286,8 +286,8 @@ def check_advertised_command(skill: str, description: str, namespace: str, names
         fail(f"skills/{skill}: description must say it is invocable as `{expected}`")
 
     # A `/name` that matches some skill is an un-namespaced command reference. The
-    # lookbehind keeps prose like "pull/merge request" out of it, and `/z:triage`
-    # only ever captures the `z` namespace, which is not a skill name.
+    # lookbehind keeps prose like "pull/merge request" out of it, and `/zenable:triage`
+    # only ever captures the `zenable` namespace, which is not a skill name.
     for referenced in sorted(set(re.findall(r"(?<![\w:-])/([\w-]+)", description))):
         if referenced in names:
             fail(
@@ -440,7 +440,7 @@ def main() -> int:
     print()
     print("Claude Code:")
     print("  /plugin marketplace add Zenable-io/skills")
-    print("  /plugin install z@zenable")
+    print("  /plugin install zenable@zenable")
     print("Agent Plugins 1.0 clients:")
     print("  install the `zenable` plugin from this repository")
     return 0
