@@ -79,7 +79,7 @@ Install the plugin from this repo's marketplace:
 ```
 
 Install the `zenable` CLI from [cli.zenable.app](https://cli.zenable.app); the
-[Claude Code docs](https://www.zenable.app/docs/integrations/mcp/ide/claude-code) have
+[setup docs](https://www.zenable.app/docs/integrations/mcp/getting-started) have
 the details. Once it is installed, the plugin wires the post-edit hooks for you at the
 start of each session. If it is missing, Claude asks before installing it. What you get:
 
