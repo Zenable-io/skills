@@ -82,9 +82,11 @@ tasks:
       - prek cache gc 1>/dev/null
 
   validate:
-    desc: Validate the pre-commit config
+    desc: Validate the lock file and the pre-commit config
     deps: [init-prek]
     cmds:
+      # Everything else runs with --frozen, which never notices a stale lock
+      - uv lock --check
       # prek needs the paths explicitly; with no arguments it exits zero having checked nothing
       - prek validate-config .pre-commit-config.yaml
       - prek validate-manifest .pre-commit-hooks.yaml

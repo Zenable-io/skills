@@ -34,7 +34,8 @@ disagree with the released tag, `/plugin list` reports the stale manifest value 
 workflow (Actions → Release → Run workflow). `semantic-release` derives the next
 version from the conventional commits since the last tag (`feat:` → minor, `fix:` →
 patch, `!`/`BREAKING CHANGE:` → major), writes it into both manifests and
-`pyproject.toml` (`version_toml`/`version_variables` under `[tool.semantic_release]`),
+`pyproject.toml` (`version_toml`/`version_variables` under `[tool.semantic_release]`), re-locks `uv.lock`
+(`build_command`),
 commits the bump with the changelog as `chore(release): {version}`, pushes that commit
 to main, and tags it — so the released tag always points at manifests carrying the
 released version.

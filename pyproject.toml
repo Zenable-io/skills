@@ -51,6 +51,11 @@ version_variables = [
     "plugins/zenable/.claude-plugin/plugin.json:version",
     "plugins/zenable/plugin.json:version",
 ]
+# uv.lock records this project's version too. Stamping it here would mean a pattern that
+# also rewrites dependency versions, so uv re-locks after the manifests are written and
+# `assets` puts the result in the release commit.
+build_command = "uv lock"
+assets = ["uv.lock"]
 commit_message = "chore(release): {version}"
 branch = "main"
 commit_parser = "angular"
