@@ -108,7 +108,7 @@ skills/
 │       ├── hooks/                # Claude Code only — not portable
 │       │   └── hooks.json        # Event hooks
 │       ├── scripts/
-│       │   └── bootstrap.sh      # SessionStart CLI bootstrap
+│       │   └── bootstrap.sh      # SessionStart hook wiring
 │       └── skills/               # Shared by BOTH formats
 │           ├── assessment/       # /zenable:assessment — setup + validation + reporting
 │           │   ├── SKILL.md
