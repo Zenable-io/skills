@@ -15,15 +15,15 @@ This skill was used privately first and is now public after private testing.
 
 ## Pre-flight
 
-zenable CLI location: !`which zenable 2>/dev/null || echo "NOT INSTALLED"`
+zenable CLI location: run `which zenable 2>/dev/null || echo "NOT INSTALLED"`
 
-zenable CLI version: !`zenable version 2>/dev/null || echo "unavailable"`
+zenable CLI version: run `zenable version 2>/dev/null || echo "unavailable"`
 
 If the CLI is not installed, ask the user for permission before installing
 anything. If they approve, get the current install command for their operating
 system from https://cli.zenable.app and run it, then re-run `zenable version`.
 
-Findings access: !`zenable auth can-i findings:read 2>/dev/null; echo "exit code $?"`
+Findings access: run `zenable auth can-i findings:read 2>/dev/null; echo "exit code $?"`
 
 Continue only on exit code 0. Exit code 1 means the account cannot read
 findings: the user's role lacks findings access, or their plan does not include
@@ -31,7 +31,7 @@ it. Tell the user that and point them to the
 [Zenable docs](https://docs.zenable.io/?utm_source=skills&utm_medium=cli). For any
 other code, the user is probably not signed in: ask them to run `zenable login`.
 
-Authenticated account: !`zenable auth whoami 2>&1 || echo "NOT AUTHENTICATED"`
+Authenticated account: run `zenable auth whoami 2>&1 || echo "NOT AUTHENTICATED"`
 
 ## 1. Fetch
 

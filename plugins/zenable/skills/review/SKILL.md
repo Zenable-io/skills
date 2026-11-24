@@ -14,9 +14,9 @@ Run these checks before reviewing anything.
 
 ### zenable CLI
 
-zenable CLI location: !`command -v zenable 2>/dev/null || echo "NOT INSTALLED"`
+zenable CLI location: run `command -v zenable 2>/dev/null || echo "NOT INSTALLED"`
 
-If the above shows "NOT INSTALLED", ask the user for permission before
+If that prints "NOT INSTALLED", ask the user for permission before
 installing anything on their machine. If they approve, get the current install
 command for their operating system from https://cli.zenable.app (there is one for
 macOS/Linux and one for Windows) and run it. Read it from the page each time rather
@@ -29,12 +29,11 @@ that this skill needs the CLI.
 
 ### Sign-in and plan
 
-zenable access: !`zenable auth can-i get_findings 2>/dev/null; echo "exit code $?"`
+zenable access: run `zenable auth can-i get_findings 2>/dev/null; echo "exit code $?"`
 
 This one call confirms the user is signed in **and** their account has an active
 trial or paid plan: `get_findings` is a paid-plan tool, so the server answers `yes`
-only for trial and paid accounts. If your client didn't run the command above for
-you, run it yourself.
+only for trial and paid accounts.
 
 Continue only on exit code 0. For any other code, look it up in the
 [Zenable CLI reference](https://docs.zenable.io/integrations/zenable/commands), tell the
