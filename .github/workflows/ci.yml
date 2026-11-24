@@ -78,7 +78,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           python-version: ${{ env.python_version }}
-      - name: Validate the pre-commit config
+      - name: Validate the lock file and pre-commit config
         run: task -v validate
       - name: Run the tests
         run: task -v test
