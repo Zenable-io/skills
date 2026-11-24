@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "z",
+      "name": "zenable",
       "source": {
         "source": "local",
-        "path": "./plugins/z"
+        "path": "./plugins/zenable"
       },
       "policy": {
         "installation": "AVAILABLE"

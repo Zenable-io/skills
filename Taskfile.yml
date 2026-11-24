@@ -100,7 +100,7 @@ tasks:
       - task: test-skills-cli
 
   test-plugin:
-    desc: Validate the z plugin structure
+    desc: Validate the zenable plugin structure
     cmds:
       - '{{.RUN_SCRIPT}} python tests/zenable_skills/validate_structure.py'
 
@@ -131,7 +131,7 @@ tasks:
       # not a package, and keeping `dependencies = []` keeps its supply-chain
       # surface at zero. --exclude-newer gives a freshly published (potentially
       # compromised) release time to be caught before we pull it in.
-      - uv run --with pytest --exclude-newer "7 days" --no-project pytest plugins/z/skills/assessment/scripts/tests -q
+      - uv run --with pytest --exclude-newer "7 days" --no-project pytest plugins/zenable/skills/assessment/scripts/tests -q
 
   test-pr-metrics-scripts:
     desc: Test the pr-metrics skill's fetch script against a stubbed zenable CLI
@@ -141,7 +141,7 @@ tasks:
     cmds:
       # Same ephemeral, age-gated pytest as test-assessment-scripts, in its own run
       # because both test directories ship a conftest.py of the same module name.
-      - uv run --with pytest --exclude-newer "7 days" --no-project pytest plugins/z/skills/pr-metrics/scripts/tests -q
+      - uv run --with pytest --exclude-newer "7 days" --no-project pytest plugins/zenable/skills/pr-metrics/scripts/tests -q
 
   test-report-template:
     desc: Test the assessment report template's render pipeline (app.js)
@@ -154,7 +154,7 @@ tasks:
       # The glob is expanded by the shell, not by node: passing plain file paths
       # works on every node version that has --test, while glob-as-argument
       # support arrived later.
-      - node --test plugins/z/skills/assessment/tests/*.test.js
+      - node --test plugins/zenable/skills/assessment/tests/*.test.js
 
   clean:
     desc: Clean up build artifacts, cache files/directories, temp files, etc.
