@@ -56,6 +56,12 @@ jobs:
         with:
           python-version: ${{ env.python_version }}
 
+      # semantic-release's build_command re-locks uv.lock with the new version
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: false
+
       - name: Install semantic-release
         # Installed here rather than via python-semantic-release's own action: that
         # action builds its image on the runner from a requirements file pinning
