@@ -1,7 +1,6 @@
 ---
 name: pr-metrics
 description: Show your organization's pull request delivery history before and after Zenable — fetch your PR history and open a local HTML report of merged PRs per month, active authors, open-to-merge lead time (median/P75/P90), lead time by PR size, abandon rate, people vs automation, and per-repository and per-author tables, with filters. Use this skill whenever the user asks about PR delivery history, PR lead time or cycle time, merge or abandon rate, PR throughput, DORA-style monthly engineering metrics, or how delivery changed before and after adopting Zenable, or invokes `/zenable:pr-metrics`. Also trigger for phrases like "how fast do our PRs merge", "show our PR trends", or "did Zenable change our lead time".
-allowed-tools: Bash(which zenable:*), Bash(zenable version:*), Bash(zenable auth can-i:*), Bash(zenable auth whoami:*), Bash(zenable api raw GET:*), Bash(uv run --script:*), Bash(python3:*), Bash(echo:*)
 ---
 
 # PR delivery history

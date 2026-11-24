@@ -1,7 +1,6 @@
 ---
 name: review
 description: Reviews code changes against your Zenable requirements using hybrid LLM-as-judge analysis and Zenable's deterministic verifier rules. Automatically invoked when making code changes or at development milestones. Use for security compliance, quality checks, and policy enforcement, or when the user invokes `/zenable:review`.
-allowed-tools: Read, Edit, Write, Bash, Grep, Glob
 ---
 
 # Zenable Review

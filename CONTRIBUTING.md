@@ -150,7 +150,6 @@ disappear everywhere else. Claude Code surfaces plugin skills under the same
    ---
    name: my-skill
    description: Clear description with trigger keywords. Use when..., or invokes `/zenable:my-skill`.
-   allowed-tools: Read, Write, Edit, Bash
    ---
 
    # My Skill
